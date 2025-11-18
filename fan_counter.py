@@ -5,6 +5,7 @@ class FanCounter:
         self.winner_seat = winner_seat
         self.winner_cards = winner_cards
         self.curr_circle = curr_circle
+        self.logs = []
     
     def count_compass(self):
         count = 0
@@ -18,14 +19,17 @@ class FanCounter:
                 has_compass = True
                 if self.winner_cards[key] >= 3:
                     count += 1
+                    self.logs.append(f"{key} +1")
 
         #Counts curr circle
         if self.curr_circle in self.winner_cards and self.winner_cards[self.curr_circle] == 3:
             count += 1
+            self.logs.append("Current circle +1")
 
         #Counts seat position
         if seat_dict[self.winner_seat] in self.winner_cards and self.winner_cards[seat_dict[self.winner_seat]] == 3:
             count += 1
+            self.logs.append("Compass seat position +1")
 
         return count, has_compass
 
@@ -34,6 +38,7 @@ class FanCounter:
         has_zfb = False
         small_3 = 0
         big_3 = 0
+        zfb_logs = []
 
         for key in self.winner_cards:
             if key not in zfb_dict:
@@ -41,6 +46,7 @@ class FanCounter:
             else:
                 has_zfb = True
                 count += 2
+                zfb_logs.append(f"Has {key} +2")
 
                 small_3 += 1
                 if self.winner_cards[key] == 3:
@@ -48,8 +54,17 @@ class FanCounter:
 
         if small_3 == 3:
             count = 30
+            zfb_logs.clear()
+            zfb_logs.append("Has small zfb +30")
 
         if big_3 == 3:
             count = 60
+            zfb_logs.clear()
+            zfb_logs.append("Has big zfb +60")
+
+        self.logs.append(zfb_logs)
 
         return count, has_zfb
+    
+    def getLogs(self):
+        return self.logs
