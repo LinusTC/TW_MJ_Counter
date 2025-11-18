@@ -1,4 +1,5 @@
 from dictionary import *
+from values import *
 
 class FlowerCounter:
     def __init__(self, winner_seat, winner_cards):
@@ -15,12 +16,12 @@ class FlowerCounter:
                 continue
             else:
                 has_flower = True
-                count += 1
-                self.logs.append(f"Flower {key} +1")
+                count += flower_value
+                self.logs.append(f"Flower {key} + {flower_value}")
 
                 if flower_dict[key] == self.winner_seat:
-                    count += 1
-                    self.logs.append(f"Flower {key} position +1")
+                    count += flower_seat_value
+                    self.logs.append(f"Flower {key} position + {flower_seat_value}")
 
         return count, has_flower
     
