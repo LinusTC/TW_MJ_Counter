@@ -24,7 +24,7 @@ class FanCounter:
         #Counts curr circle
         if self.curr_circle in self.winner_cards and self.winner_cards[self.curr_circle] == 3:
             count += 1
-            self.logs.append("Current circle +1")
+            self.logs.append(f"Current circle is {self.curr_circle} +1")
 
         #Counts seat position
         if seat_dict[self.winner_seat] in self.winner_cards and self.winner_cards[seat_dict[self.winner_seat]] == 3:
