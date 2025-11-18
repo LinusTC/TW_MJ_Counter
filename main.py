@@ -1,36 +1,20 @@
-from dictionary import dir_dict, f_dict, w_dict, t_dict, s_dict
-
-def count_compass(winner_seat, curr_circle, winner_cards):
-    count = 0
-    compass_eyes = False
-    
-    #Counts compass
-    for key in winner_cards:
-        if key not in dir_dict:
-            continue
-        else:
-            if winner_cards[key] >= 3:
-                count += 1
-            if winner_cards[key] == 2:
-                compass_eyes = True
-
-    #Counts curr circle
-    if winner_cards[curr_circle] == 3:
-        count += 1
-
-    #Counts seat position
-    if winner_cards[winner_seat] == 3:
-        count += 1
-
-    #No compass cards, NEED TO CHANGE
-    if count == 0: 
-        return 1 if not compass_eyes else 0
-    
-    return count
+from dictionary import *
+from fan_counter import FanCounter
+from flower_counter import FlowerCounter
 
 if __name__ == "__main__":
-    test = {'east' : 3, 'west': 3}
-    winner_seat = 'east'
+    test = {'west' : 3, 'east': 3, 'ff1': 1, "f1": 1, 'f2': 1, 'zhong': 3, 'fa': 3, 'bai': 3, 'north': 2}
+    winner_seat = 2
     curr_circle = 'west'
 
-    print(count_compass(winner_seat, curr_circle, test))
+    count = 0
+    
+    fan_counter = FanCounter(winner_seat, test, curr_circle)
+    compas_count, has_compass = fan_counter.count_compass()
+    zfb_count, has_zef = fan_counter.count_zfb()
+    
+    flower_counter = FlowerCounter(winner_seat, test)
+    flower_count, has_flower = flower_counter.count_flower()
+
+    count += compas_count + flower_count + zfb_count
+    print(count)
