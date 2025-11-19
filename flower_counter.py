@@ -2,16 +2,16 @@ from dictionary import *
 from values import *
 
 class FlowerCounter:
-    def __init__(self, winner_seat, winner_cards):
+    def __init__(self, winner_seat, winner_tiles):
         self.winner_seat = winner_seat
-        self.winner_cards = winner_cards
+        self.winner_tiles = winner_tiles
         self.logs = []
 
     def count_flower(self):
         count = 0
         has_flower = False
 
-        for key in self.winner_cards:
+        for key in self.winner_tiles:
             if key not in flower_dict:
                 continue
             else:

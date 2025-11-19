@@ -2,9 +2,9 @@ from dictionary import *
 from values import *
 
 class FanCounter:
-    def __init__(self, winner_seat, winner_cards, curr_circle):
+    def __init__(self, winner_seat, winner_tiles, curr_circle):
         self.winner_seat = winner_seat
-        self.winner_cards = winner_cards
+        self.winner_tiles = winner_tiles
         self.curr_circle = curr_circle
         self.logs = []
     
@@ -16,16 +16,16 @@ class FanCounter:
         compass_logs = []        
         
         #Counts compass
-        for key in self.winner_cards:
+        for key in self.winner_tiles:
             if key not in compass_dict:
                 continue
             else:
                 has_compass = True
 
-                if self.winner_cards[key] >= 2:
+                if self.winner_tiles[key] >= 2:
                     small_4 += 1
 
-                if self.winner_cards[key] >= 3:
+                if self.winner_tiles[key] >= 3:
                     big_4 += 1
                     count += compass_value
                     compass_logs.append(f"{key} +{compass_value}")
@@ -42,12 +42,12 @@ class FanCounter:
             compass_logs.append(f"Has big 4 compass +{big_4_compass_value}")
 
         #Counts curr circle
-        if self.curr_circle in self.winner_cards and self.winner_cards[self.curr_circle] == 3:
+        if self.curr_circle in self.winner_tiles and self.winner_tiles[self.curr_circle] == 3:
             count += compass_circle_value
             compass_logs.append(f"Current circle is {self.curr_circle} +{compass_circle_value}")
 
         #Counts seat position
-        if seat_dict[self.winner_seat] in self.winner_cards and self.winner_cards[seat_dict[self.winner_seat]] == 3:
+        if seat_dict[self.winner_seat] in self.winner_tiles and self.winner_tiles[seat_dict[self.winner_seat]] == 3:
             count += compass_seat_value
             compass_logs.append(f"Compass seat position +{compass_seat_value}")
 
@@ -62,7 +62,7 @@ class FanCounter:
         big_3 = 0
         zfb_logs = []
 
-        for key in self.winner_cards:
+        for key in self.winner_tiles:
             if key not in zfb_dict:
                 continue
             else:
@@ -71,7 +71,7 @@ class FanCounter:
                 zfb_logs.append(f"Has {key} +{zfb_value}")
 
                 small_3 += 1
-                if self.winner_cards[key] == 3:
+                if self.winner_tiles[key] == 3:
                     big_3 += 1
 
         if small_3 == 3:
