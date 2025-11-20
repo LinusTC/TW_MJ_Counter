@@ -31,8 +31,9 @@ class DeckValidator:
             self.possibleDecks.append(['13waist', self.winner_tiles])
             return True
         
-        #Check Standard
-        self.standard_check(self.winner_tiles_no_flower)
+        #Check Standard, already adds to possible decks on its own
+        if self.standard_check(self.winner_tiles_no_flower):
+            return True
 
         return False
 
