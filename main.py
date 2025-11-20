@@ -11,7 +11,7 @@ if __name__ == "__main__":
     standard_test = {'m1': 2, 'm2':2, 'm3':2, 'm4': 2, 'm5':2, "m6":2, 'east': 4, 'm7': 2}
 
     winner_seat = 2
-    curr_circle = 'west'
+    curr_wind = 'west'
 
     deck_validator = DeckValidator(standard_test)
     has_valid_deck = deck_validator.full_check()

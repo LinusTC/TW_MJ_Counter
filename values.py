@@ -8,7 +8,7 @@ fake_solo_value = 1
 double_pong_value = 1
 myself_mo_value = 1
 flower_seat_value = 1
-wind_circle_value = 1
+wind_wind_value = 1
 wind_seat_value = 1
 
 zfb_value = 2

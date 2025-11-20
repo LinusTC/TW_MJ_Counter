@@ -2,10 +2,10 @@ from dictionary import *
 from values import *
 
 class FanCounter:
-    def __init__(self, winner_seat, winner_tiles, curr_circle):
+    def __init__(self, winner_seat, winner_tiles, curr_wind):
         self.winner_seat = winner_seat
         self.winner_tiles = winner_tiles
-        self.curr_circle = curr_circle
+        self.curr_wind = curr_wind
         self.logs = []
     
     def count_wind(self):
@@ -41,10 +41,10 @@ class FanCounter:
             wind_logs.clear()
             wind_logs.append(f"Has big 4 wind +{big_4_wind_value}")
 
-        #Counts curr circle
-        if self.curr_circle in self.winner_tiles and self.winner_tiles[self.curr_circle] == 3:
-            count += wind_circle_value
-            wind_logs.append(f"Current circle is {self.curr_circle} +{wind_circle_value}")
+        #Counts curr wind
+        if self.curr_wind in self.winner_tiles and self.winner_tiles[self.curr_wind] == 3:
+            count += wind_wind_value
+            wind_logs.append(f"Current wind is {self.curr_wind} +{wind_wind_value}")
 
         #Counts seat position
         if seat_dict[self.winner_seat] in self.winner_tiles and self.winner_tiles[seat_dict[self.winner_seat]] == 3:
