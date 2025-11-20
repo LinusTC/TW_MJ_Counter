@@ -151,8 +151,9 @@ class DeckValidator:
             complete_sets = []
             memo = {}
             if self.top_down_dfs(remaining_tiles, memo, complete_sets):
-                self.possibleDecks.append(['standard', {'eye': eye, 'tiles': complete_sets}])
-                found_valid = True
+                if len(complete_sets) == 5:
+                    self.possibleDecks.append(['standard', {'eye': eye, 'tiles': complete_sets}])
+                    found_valid = True
 
         return found_valid
 

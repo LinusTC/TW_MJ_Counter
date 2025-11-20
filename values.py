@@ -10,3 +10,5 @@ big_4_compass_value = 80
 zfb_value = 2
 small_3_zfb_value = 30
 big_3_zfb_value = 60
+
+gong_value = 1
