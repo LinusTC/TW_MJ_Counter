@@ -7,7 +7,7 @@ if __name__ == "__main__":
     sixteenbd_test = {'m1': 1, 'm5': 1, 'm9': 1, 's1': 1, 's4': 1, 's7': 1, 't1': 1, 't6': 1, 't9': 1, 'east': 1, 'south': 1, 'west': 2, 'north': 1, 'zhong': 1, 'fa': 1, 'bai':1}
     Thirteen_waist_test = {'m1': 1, 'm9':1, 's1': 1, 's9':1, 't1': 1, 't7':1, 't8':1, 't9':3, 'east': 1, 'south': 1, 'west': 1, 'north': 1, 'zhong': 1, 'fa': 1, 'bai':1}
     ligu_test = {'m1': 4, 'm5': 4, 't1': 4, 'zhong': 2, 'bai': 3}
-    standard_test = {'m1': 3, 'm9':3, 'm4':3, 'm8': 3, 'm7': 2, 'm2': 3}
+    standard_test = {'f1': 1, "ff1": 1, 'f2': 1, 'ff2': 1, "f3": 1, 'ff3': 1, 'm1': 3, 'm9':3, 's1':3, 't9': 3, 't1': 2, 's9': 3}
 
     winner_seat = 2
     curr_wind = 'west'
