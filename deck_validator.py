@@ -1,5 +1,6 @@
 from dictionary import *
 from helpers import remove_flowers, clean_tiles
+from types_of_hu import *
 class DeckValidator:
     def __init__(self, winner_tiles):
         self.winner_tiles = clean_tiles(winner_tiles)
@@ -59,7 +60,7 @@ class DeckValidator:
                 flowers.append(key)
 
         if len(flowers) >= 7:
-            return ['flower hu', {'flowers': flowers}]
+            return {'hu_type': flower_hu, 'flowers': flowers}
 
         return []
     
@@ -83,7 +84,8 @@ class DeckValidator:
             elif value == 3:
                 results['triple'].append(f'{key}, {key}, {key}')
 
-        return ['ligu hu', results] if len(results['pairs']) == 7 and len(results['triple']) == 1 else []
+        results['hu_type'] = ligu_hu
+        return [results] if len(results['pairs']) == 7 and len(results['triple']) == 1 else []
     
     def sixteen_bd_check(self, tiles):
         #Check it has all wind and zfb
@@ -127,7 +129,7 @@ class DeckValidator:
         for key, value in tiles.items():
             all_tiles.extend([key] * value)
 
-        return ['16bd', {'eyes': eyes[0],'tiles': all_tiles}]
+        return {'hu_type': sixteen_bd_hu,'eyes': eyes[0],'tiles': all_tiles}
     
     def thirteen_waist_check(self, tiles):
         tiles_to_remove = []
@@ -174,7 +176,7 @@ class DeckValidator:
             if self.top_down_dfs(remaining_tiles, memo, complete_sets):
                 tiles_list = complete_sets + tiles_to_remove.copy()
                 tiles_list.append(eye)
-                return ['13waist hu', {'eye': eye, 'tiles': tiles_list}]
+                return {'hu_type':thirteen_waist_hu, 'eye': eye, 'tiles': tiles_list}
 
         return []
     
@@ -197,7 +199,7 @@ class DeckValidator:
             memo = {}
             if self.top_down_dfs(remaining_tiles, memo, complete_sets):
                 if len(complete_sets) == 6:
-                    results.append(['standard hu', {'eye': eye, 'tiles': complete_sets}])
+                    results.append({'hu_type': standard_hu, 'eye': eye, 'tiles': complete_sets})
 
         return results
 

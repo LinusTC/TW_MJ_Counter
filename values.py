@@ -48,3 +48,5 @@ one_nine_with_fan = 80
 two_numbers_no_fan_value = 100
 only_fan_value = 100
 only_one_nine_value = 100
+
+explode_hu_value = 50
