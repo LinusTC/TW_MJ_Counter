@@ -8,52 +8,52 @@ class FanCounter:
         self.curr_circle = curr_circle
         self.logs = []
     
-    def count_compass(self):
+    def count_wind(self):
         count = 0
-        has_compass = False
+        has_wind = False
         small_4 = 0
         big_4 = 0
-        compass_logs = []        
+        wind_logs = []        
         
-        #Counts compass
+        #Counts wind
         for key in self.winner_tiles:
-            if key not in compass_dict:
+            if key not in wind_dict:
                 continue
             else:
-                has_compass = True
+                has_wind = True
 
                 if self.winner_tiles[key] >= 2:
                     small_4 += 1
 
                 if self.winner_tiles[key] >= 3:
                     big_4 += 1
-                    count += compass_value
-                    compass_logs.append(f"{key} +{compass_value}")
+                    count += wind_value
+                    wind_logs.append(f"{key} +{wind_value}")
 
-        #Checks small/big four compass
+        #Checks small/big four wind
         if small_4 == 4:
-            count = small_4_compass_value
-            compass_logs.clear()
-            compass_logs.append(f"Has small 4 compass +{small_4_compass_value}")
+            count = small_4_wind_value
+            wind_logs.clear()
+            wind_logs.append(f"Has small 4 wind +{small_4_wind_value}")
 
         if big_4 == 4:
-            count = big_4_compass_value
-            compass_logs.clear()
-            compass_logs.append(f"Has big 4 compass +{big_4_compass_value}")
+            count = big_4_wind_value
+            wind_logs.clear()
+            wind_logs.append(f"Has big 4 wind +{big_4_wind_value}")
 
         #Counts curr circle
         if self.curr_circle in self.winner_tiles and self.winner_tiles[self.curr_circle] == 3:
-            count += compass_circle_value
-            compass_logs.append(f"Current circle is {self.curr_circle} +{compass_circle_value}")
+            count += wind_circle_value
+            wind_logs.append(f"Current circle is {self.curr_circle} +{wind_circle_value}")
 
         #Counts seat position
         if seat_dict[self.winner_seat] in self.winner_tiles and self.winner_tiles[seat_dict[self.winner_seat]] == 3:
-            count += compass_seat_value
-            compass_logs.append(f"Compass seat position +{compass_seat_value}")
+            count += wind_seat_value
+            wind_logs.append(f"wind seat position +{wind_seat_value}")
 
-        self.logs.append(compass_logs)
+        self.logs.append(wind_logs)
 
-        return count, has_compass
+        return count, has_wind
 
     def count_zfb(self):
         count = 0
