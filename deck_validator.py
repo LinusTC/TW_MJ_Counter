@@ -14,31 +14,31 @@ class DeckValidator:
         #Check flower hu
         flower_results = self.flower_hu_check(self.winner_tiles)
         if flower_results:
-            self.possibleDecks.append(flower_results)
+            self.possibleDecks.extend(flower_results)
             return True
         
         #Check Ligu
         ligu_results = self.ligu_check(self.winner_tiles_no_flower)
         if ligu_results:
-            self.possibleDecks.append(ligu_results)
+            self.possibleDecks.extend(ligu_results)
             return True
         
         #Check 16bd
         sixteen_bd_results = self.sixteen_bd_check(self.winner_tiles_no_flower)
         if sixteen_bd_results:
-            self.possibleDecks.append(sixteen_bd_results)
+            self.possibleDecks.extend(sixteen_bd_results)
             return True
         
         #Check 13 waist
         thirteen_results = self.thirteen_waist_check(self.winner_tiles_no_flower)
         if thirteen_results:
-            self.possibleDecks.append(thirteen_results)
+            self.possibleDecks.extend(thirteen_results)
             return True
         
         #Check Standard
         standard_results = self.standard_check(self.winner_tiles_no_flower)
         if standard_results:
-            self.possibleDecks.append(standard_results)
+            self.possibleDecks.extend(standard_results)
             return True
 
         return False
