@@ -86,8 +86,6 @@ class DeckValidator:
         return ['ligu hu', results] if len(results['pairs']) == 7 and len(results['triple']) == 1 else []
     
     def sixteen_bd_check(self, tiles):
-        if (self.card_count(tiles) != 17): return []
-
         #Check it has all compass and zfb
         for key in compass_dict:
             if key not in tiles:
@@ -132,7 +130,6 @@ class DeckValidator:
         return ['16bd', {'eyes': eyes[0],'tiles': all_tiles}]
     
     def thirteen_waist_check(self, tiles):
-        if (self.card_count(tiles) != 17): return []
         tiles_to_remove = []
 
         #Check it has all compass and zfb
