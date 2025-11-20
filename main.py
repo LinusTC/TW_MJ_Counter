@@ -12,4 +12,6 @@ if __name__ == "__main__":
 
     deck_validator = DeckValidator(standard_test)
     has_valid_deck = deck_validator.full_check()
-    print(f'Has valid decks: {has_valid_deck}', deck_validator.possibleDecks)
+    print(f'Has valid decks: {has_valid_deck}')
+    for item in deck_validator.possibleDecks:
+        print(item)
