@@ -28,8 +28,8 @@ three_sister_value = 5
 
 same_dragon_value = 10
 no_zifa_ping_hu_value = 12
-small_3_wind_value = 15
-big_3_wind_value = 30
+small_3_wind_value = 15 #done
+big_3_wind_value = 30 #done
 dui_dui_hu_value = 30
 same_house_with_fan_value = 30 #done
 small_3_zfb_value = 30 #done
