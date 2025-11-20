@@ -11,3 +11,6 @@ def remove_flowers(tiles):
         del tiles_copy[key]
 
     return tiles_copy
+
+def clean_tiles(tiles):
+    return {key: value for key, value in tiles.items() if value > 0}

@@ -1,9 +1,9 @@
 from dictionary import *
-from helpers import remove_flowers
+from helpers import remove_flowers, clean_tiles
 class DeckValidator:
     def __init__(self, winner_tiles):
-        self.winner_tiles = winner_tiles
-        self.winner_tiles_no_flower = remove_flowers(winner_tiles)
+        self.winner_tiles = clean_tiles(winner_tiles)
+        self.winner_tiles_no_flower = clean_tiles(remove_flowers(winner_tiles))
         self.possibleDecks = []
 
     def full_check(self):
@@ -30,6 +30,9 @@ class DeckValidator:
         if self.thirteen_waist_check(self.winner_tiles_no_flower):
             self.possibleDecks.append(['13waist', self.winner_tiles])
             return True
+        
+        #Check Standard
+        self.standard_check(self.winner_tiles_no_flower)
 
         return False
 
@@ -130,5 +133,106 @@ class DeckValidator:
                 return False
         return None
     
-    def standard_check(self, tiles):
+    def standard_check(self, tiles):        
+        #Find all possible eyes
+        possible_eyes = []
+
+        for key, value in tiles.items():
+            if value >= 2:
+                temp = tiles.copy()
+                temp[key] -= 2
+                tiles = clean_tiles(tiles)
+                possible_eyes.append((key, temp))
+        
+        found_valid = False
+
+        for eye, remaining_tiles in possible_eyes:
+            complete_sets = []
+            memo = {}
+            if self.top_down_dfs(remaining_tiles, memo, complete_sets):
+                self.possibleDecks.append(['standard', {'eye': eye, 'tiles': complete_sets}])
+                found_valid = True
+
+        return found_valid
+
+    def top_down_dfs(self, tiles, memo, complete_sets):
+        if not tiles:
+            return True
+        
+        #Convert tuple so that it can be stored in dictionary
+        sorted_tiles = tuple(sorted(tiles.items()))
+        if sorted_tiles in memo:
+            return memo[sorted_tiles]
+        
+        #Get a tile from the tiles
+        temp = min(tiles.keys())
+        
+        #1. Try Gong
+        if self.test_pong(tiles, temp) and tiles[temp] > 3:
+            next_tiles = tiles.copy()
+            next_tiles[temp] -= 4
+            next_tiles = clean_tiles(next_tiles)
+
+            if self.top_down_dfs(next_tiles, memo, complete_sets):
+                memo[sorted_tiles] = True
+                complete_sets.append(f'{temp}, {temp}, {temp}, {temp}')
+                return True
+
+        #2. Try Pong
+        if self.test_pong(tiles, temp):
+            next_tiles = tiles.copy()
+            next_tiles[temp] -= 3
+            next_tiles = clean_tiles(next_tiles)
+
+            if self.top_down_dfs(next_tiles, memo, complete_sets):
+                memo[sorted_tiles] = True
+                complete_sets.append(f'{temp}, {temp}, {temp}')
+                return True
+        
+        #3. Try Shang
+        if self.test_shang(tiles, temp):
+            next_tiles = tiles.copy()
+            suit = temp[0]
+            rank = int(temp[1])
+            
+            next_tiles[temp] -= 1
+            next_tiles = clean_tiles(next_tiles)
+            
+            tile_plus_1 = f'{suit}{rank+1}'
+            next_tiles[tile_plus_1] -= 1
+            next_tiles = clean_tiles(next_tiles)
+            
+            tile_plus_2 = f'{suit}{rank+2}'
+            next_tiles[tile_plus_2] -= 1
+            next_tiles = clean_tiles(next_tiles)
+            
+            if self.top_down_dfs(next_tiles, memo, complete_sets):
+                memo[sorted_tiles] = True
+                complete_sets.append(f'{temp}, {suit}{rank+1}, {suit}{rank+2}')
+                return True
+        
+        memo[sorted_tiles] = False
         return False
+           
+    def test_pong(self, tiles, curr_tile):            
+        return tiles[curr_tile] >= 3
+    
+    def test_shang(self, tiles, curr_tile):
+        if curr_tile not in m_dict and curr_tile not in s_dict and curr_tile not in t_dict:
+            return False
+
+        suit = curr_tile[0]
+        
+        number = int(curr_tile[1])
+        if number > 7:
+            return False
+        
+        tile_plus_1 = f'{suit}{number+1}'
+        tile_plus_2 = f'{suit}{number+2}'
+        
+        return (curr_tile in tiles and 
+                tile_plus_1 in tiles and 
+                tile_plus_2 in tiles and 
+                tiles[curr_tile] >= 1 and 
+                tiles[tile_plus_1] >= 1 and 
+                tiles[tile_plus_2] >= 1)
