@@ -13,7 +13,8 @@ class FanCounter:
         has_wind = False
         small_wind = 0
         big_wind = 0
-        wind_logs = []        
+        wind_logs = []
+        counted_pos = False        
         
         #Counts wind
         for key in self.winner_tiles:
@@ -59,11 +60,12 @@ class FanCounter:
         #Counts seat position
         if seat_dict[self.winner_seat] in self.winner_tiles and self.winner_tiles[seat_dict[self.winner_seat]] == 3:
             value += wind_seat_value
+            counted_pos = True
             wind_logs.append(f"正{seat_dict[self.winner_seat]}位 +{wind_seat_value}")
 
         self.logs.extend(wind_logs)
 
-        return wind_value if has_wind == False else 0, has_wind
+        return wind_value if has_wind == False else 0, has_wind, counted_pos
 
     def count_zfb_value(self):
         value = 0

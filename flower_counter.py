@@ -10,6 +10,7 @@ class FlowerCounter:
     def count_flower_value(self):
         value = 0
         has_flower = False
+        counted_pos = False
 
         for key in self.winner_tiles:
             if key not in flower_dict:
@@ -21,11 +22,12 @@ class FlowerCounter:
 
                 if flower_dict[key] == self.winner_seat:
                     value += flower_seat_value
+                    counted_pos = True
                     self.logs.append(f"花位{key} +{flower_seat_value}")
 
         if value == 0: value += flower_value
-        
-        return value, has_flower
+
+        return value, has_flower, counted_pos
     
     def getLogs(self):
         return self.logs

@@ -46,21 +46,26 @@ class FullCounter:
             _add_to_log(log)
 
             #Check flower
-            value, log, hu, has_flower = self.c_flower()
+            value, log, hu, has_flower, counted_flower_pos = self.c_flower()
             temp_value += value
             _add_to_log(log)
             if hu:
                 break
 
             #Check 字
-            value, log, has_special_tiles = self.c_fan()
+            value, log, has_special_tiles, counted_wind_pos = self.c_fan()
             temp_value += value
             _add_to_log(log)
             
-            #Bonus for no flower and no special tiles
+            #No flower and no 字
             if not has_flower and not has_special_tiles:
                 temp_value += noFlower_noZFB_nowind_value_add_on
                 _add_to_log(f'無字無花再加 +{noFlower_noZFB_nowind_value_add_on}')
+
+            #正花正位
+            if counted_flower_pos and counted_wind_pos:
+                temp_value += flower_wind_seat_value_add_on
+                _add_to_log(f'正花正位再加 +{flower_wind_seat_value_add_on}')            
 
         self.final_value = temp_value
         self.logs = temp_logs
@@ -78,36 +83,36 @@ class FullCounter:
         return 0, None
 
     def c_flower(self):
-        flower_value, has_flower = self.flowerCounter.count_flower_value()
+        flower_value, has_flower, counted_pos = self.flowerCounter.count_flower_value()
         has_flower_hu = self.validated_tiles[0]['hu_type'] == flower_hu
 
         if not has_flower:
             value = flower_value
             log = f'無花 +{value}'
-            return value, log, has_flower_hu, has_flower
+            return value, log, has_flower_hu, has_flower, counted_pos
 
         if (has_flower_hu):
             value = seven_flower_value if len(self.validated_tiles[0]['flowers']) == 7 else eight_flower_value
             log = f'花胡 +{value}'
-            return value, log, has_flower_hu, has_flower
+            return value, log, has_flower_hu, has_flower, counted_pos
         
         if has_flower:
             value = flower_value
             log = self.flowerCounter.getLogs()
-            return value, log, has_flower_hu, has_flower
+            return value, log, has_flower_hu, has_flower, counted_pos
 
-        return 0, None, False, False
+        return 0, None, False, False, False
     
     def c_fan(self):
-        wind_total_value, has_wind = self.fanCounter.count_wind_value()
+        wind_total_value, has_wind, counted_pos = self.fanCounter.count_wind_value()
         zfb_value, has_zfb = self.fanCounter.count_zfb_value()
         has_special_tiles = has_wind or has_zfb
 
         if not has_wind and not has_zfb:
             value = wind_total_value
             log = f'無字 +{value}'
-            return value, log, has_special_tiles
+            return value, log, has_special_tiles, counted_pos
         
         value = wind_total_value + zfb_value
         log = self.fanCounter.getLogs()
-        return value, log, has_special_tiles
+        return value, log, has_special_tiles, counted_pos
