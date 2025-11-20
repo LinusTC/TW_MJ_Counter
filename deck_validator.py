@@ -67,25 +67,32 @@ class DeckValidator:
     def ligu_check(self, tiles):
         if (self.card_count(tiles) != 17): return []
 
-        results = {'pairs':[], 'triple':[]}
+        results = {'tiles':[]}
+        pairs = 0
+        triplets = 0
 
         for key, value in tiles.items():
 
             #1 pair
             if value == 2:
-                results['pairs'].append(f'{key}, {key}')
+                pairs += 1
+                results['tiles'].append([key, key])
             
             #2 pairs of the same card
             elif value == 4:
-                results['pairs'].append(f'{key}, {key}')
-                results['pairs'].append(f'{key}, {key}')
+                pairs += 2
+                results['tiles'].append([key, key])
+                results['tiles'].append([key, key])
 
             #1 triplet in winning deck
             elif value == 3:
-                results['triple'].append(f'{key}, {key}, {key}')
+                triplets += 1
+                results['tiles'].append([key, key, key])
 
         results['hu_type'] = ligu_hu
-        return [results] if len(results['pairs']) == 7 and len(results['triple']) == 1 else []
+        results['eyes'] = None
+
+        return results if pairs == 7 and triplets == 1 else {}
     
     def sixteen_bd_check(self, tiles):
         #Check it has all wind and zfb
@@ -176,7 +183,7 @@ class DeckValidator:
             if self.top_down_dfs(remaining_tiles, memo, complete_sets):
                 tiles_list = complete_sets + tiles_to_remove.copy()
                 tiles_list.append(eye)
-                return {'hu_type':thirteen_waist_hu, 'eye': eye, 'tiles': tiles_list}
+                return {'hu_type':thirteen_waist_hu, 'eyes': eye, 'tiles': tiles_list}
 
         return []
     
@@ -195,11 +202,11 @@ class DeckValidator:
 
         for eye, remaining_tiles in possible_eyes:
             complete_sets = []
-            complete_sets.append(f'{eye}, {eye}')
+            complete_sets.append([eye, eye])
             memo = {}
             if self.top_down_dfs(remaining_tiles, memo, complete_sets):
                 if len(complete_sets) == 6:
-                    results.append({'hu_type': standard_hu, 'eye': eye, 'tiles': complete_sets})
+                    results.append({'hu_type': standard_hu, 'eyes': eye, 'tiles': complete_sets})
 
         return results
 
@@ -223,7 +230,7 @@ class DeckValidator:
 
             if self.top_down_dfs(next_tiles, memo, complete_sets):
                 memo[sorted_tiles] = True
-                complete_sets.append(f'{temp}, {temp}, {temp}, {temp}')
+                complete_sets.append([temp, temp, temp, temp])
                 return True
 
         #2. Try Pong
@@ -234,7 +241,7 @@ class DeckValidator:
 
             if self.top_down_dfs(next_tiles, memo, complete_sets):
                 memo[sorted_tiles] = True
-                complete_sets.append(f'{temp}, {temp}, {temp}')
+                complete_sets.append([temp, temp, temp])
                 return True
         
         #3. Try Shang
@@ -256,7 +263,7 @@ class DeckValidator:
             
             if self.top_down_dfs(next_tiles, memo, complete_sets):
                 memo[sorted_tiles] = True
-                complete_sets.append(f'{temp}, {suit}{rank+1}, {suit}{rank+2}')
+                complete_sets.append([temp, tile_plus_1, tile_plus_2])
                 return True
         
         memo[sorted_tiles] = False

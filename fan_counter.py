@@ -79,22 +79,23 @@ class FanCounter:
                 continue
             else:
                 has_zfb = True
-                value += zfb_value
-                zfb_logs.append(f"Has {key} +{zfb_value}")
-
-                small_3 += 1
-                if self.winner_tiles[key] == 3:
-                    big_3 += 1
+                
+                if self.winner_tiles[key] > 1:
+                    small_3 += 1
+                    if self.winner_tiles[key] > 2:
+                        value += zfb_value
+                        zfb_logs.append(f"{key} +{zfb_value}")
+                        big_3 += 1
 
         if small_3 == 3:
             value = small_3_zfb_value
             zfb_logs.clear()
-            zfb_logs.append(f"Has small zfb +{small_3_zfb_value}")
+            zfb_logs.append(f"小三元 +{small_3_zfb_value}")
 
         if big_3 == 3:
             value = big_3_zfb_value
             zfb_logs.clear()
-            zfb_logs.append(f"Has big zfb +{big_3_zfb_value}")
+            zfb_logs.append(f"大三元 +{big_3_zfb_value}")
 
         self.logs.extend(zfb_logs)
 
