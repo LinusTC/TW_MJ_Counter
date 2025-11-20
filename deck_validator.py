@@ -188,7 +188,7 @@ class DeckValidator:
             if value >= 2:
                 temp = tiles.copy()
                 temp[key] -= 2
-                tiles = clean_tiles(tiles)
+                temp = clean_tiles(temp)
                 possible_eyes.append((key, temp))
         
         results = []

@@ -45,12 +45,22 @@ class FullCounter:
             temp_value += value
             _add_to_log(log)
 
-            #Check flower hu
-            value, log, hu = self.c_flower()
+            #Check flower
+            value, log, hu, has_flower = self.c_flower()
             temp_value += value
             _add_to_log(log)
             if hu:
                 break
+
+            #Check 字
+            value, log, has_special_tiles = self.c_fan()
+            temp_value += value
+            _add_to_log(log)
+            
+            #Bonus for no flower and no special tiles
+            if not has_flower and not has_special_tiles:
+                temp_value += noFlower_noZFB_nowind_value_add_on
+                _add_to_log(f'無字無花再加 +{noFlower_noZFB_nowind_value_add_on}')
 
         self.final_value = temp_value
         self.logs = temp_logs
@@ -68,21 +78,36 @@ class FullCounter:
         return 0, None
 
     def c_flower(self):
-        flower_count, has_flower = self.flowerCounter.count_flower()
+        flower_value, has_flower = self.flowerCounter.count_flower_value()
+        has_flower_hu = self.validated_tiles[0]['hu_type'] == flower_hu
 
         if not has_flower:
             value = flower_value
             log = f'無花 +{value}'
-            return value, log, False
+            return value, log, has_flower_hu, has_flower
 
-        if (self.validated_tiles[0]['hu_type'] == flower_hu):
+        if (has_flower_hu):
             value = seven_flower_value if len(self.validated_tiles[0]['flowers']) == 7 else eight_flower_value
             log = f'花胡 +{value}'
-            return value, log, True
+            return value, log, has_flower_hu, has_flower
         
         if has_flower:
-            value = flower_count
+            value = flower_value
             log = self.flowerCounter.getLogs()
-            return value, log, False
+            return value, log, has_flower_hu, has_flower
 
-        return 0, None, False
+        return 0, None, False, False
+    
+    def c_fan(self):
+        wind_total_value, has_wind = self.fanCounter.count_wind_value()
+        zfb_value, has_zfb = self.fanCounter.count_zfb_value()
+        has_special_tiles = has_wind or has_zfb
+
+        if not has_wind and not has_zfb:
+            value = wind_total_value
+            log = f'無字 +{value}'
+            return value, log, has_special_tiles
+        
+        value = wind_total_value + zfb_value
+        log = self.fanCounter.getLogs()
+        return value, log, has_special_tiles

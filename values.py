@@ -22,14 +22,14 @@ mixed_dragon_value = 5
 ping_hu_value = 5
 less_one_door_value = 5
 break_waist_value = 5
-noFlower_noZFB_nowind_value = 5
+noFlower_noZFB_nowind_value_add_on = 3
 five_door_value = 5
 three_sister_value = 5
 
 same_dragon_value = 10
 no_zifa_ping_hu_value = 12
-small_three_wind_value = 15
-big_three_wind_value = 30
+small_3_wind_value = 15
+big_3_wind_value = 30
 dui_dui_hu_value = 30
 same_color_with_fan_value = 30
 small_3_zfb_value = 30

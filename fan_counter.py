@@ -8,11 +8,11 @@ class FanCounter:
         self.curr_wind = curr_wind
         self.logs = []
     
-    def count_wind(self):
-        count = 0
+    def count_wind_value(self):
+        value = 0
         has_wind = False
-        small_4 = 0
-        big_4 = 0
+        small_wind = 0
+        big_wind = 0
         wind_logs = []        
         
         #Counts wind
@@ -23,40 +23,50 @@ class FanCounter:
                 has_wind = True
 
                 if self.winner_tiles[key] >= 2:
-                    small_4 += 1
+                    small_wind += 1
 
                 if self.winner_tiles[key] >= 3:
-                    big_4 += 1
-                    count += wind_value
+                    big_wind += 1
+                    value += wind_value
                     wind_logs.append(f"{key} +{wind_value}")
 
-        #Checks small/big four wind
-        if small_4 == 4:
-            count = small_4_wind_value
+        #Checks small/big wind
+        if small_wind == 3:
+            value = small_3_wind_value
             wind_logs.clear()
-            wind_logs.append(f"Has small 4 wind +{small_4_wind_value}")
+            wind_logs.append(f"小三風 +{value}")
 
-        if big_4 == 4:
-            count = big_4_wind_value
+        if big_wind == 3:
+            value = big_3_wind_value
             wind_logs.clear()
-            wind_logs.append(f"Has big 4 wind +{big_4_wind_value}")
+            wind_logs.append(f"大三風 +{value}")
+
+        if small_wind == 4:
+            value = small_4_wind_value
+            wind_logs.clear()
+            wind_logs.append(f"小四喜 +{value}")
+
+        if big_wind == 4:
+            value = big_4_wind_value
+            wind_logs.clear()
+            wind_logs.append(f"大四喜 +{value}")
 
         #Counts curr wind
         if self.curr_wind in self.winner_tiles and self.winner_tiles[self.curr_wind] == 3:
-            count += wind_wind_value
-            wind_logs.append(f"Current wind is {self.curr_wind} +{wind_wind_value}")
+            value += wind_value
+            wind_logs.append(f"正{self.curr_wind}圈 +{wind_wind_value}")
 
         #Counts seat position
         if seat_dict[self.winner_seat] in self.winner_tiles and self.winner_tiles[seat_dict[self.winner_seat]] == 3:
-            count += wind_seat_value
-            wind_logs.append(f"wind seat position +{wind_seat_value}")
+            value += wind_seat_value
+            wind_logs.append(f"正{seat_dict[self.winner_seat]}位 +{wind_seat_value}")
 
-        self.logs.append(wind_logs)
+        self.logs.extend(wind_logs)
 
-        return count, has_wind
+        return wind_value if has_wind == False else 0, has_wind
 
-    def count_zfb(self):
-        count = 0
+    def count_zfb_value(self):
+        value = 0
         has_zfb = False
         small_3 = 0
         big_3 = 0
@@ -67,7 +77,7 @@ class FanCounter:
                 continue
             else:
                 has_zfb = True
-                count += zfb_value
+                value += zfb_value
                 zfb_logs.append(f"Has {key} +{zfb_value}")
 
                 small_3 += 1
@@ -75,18 +85,18 @@ class FanCounter:
                     big_3 += 1
 
         if small_3 == 3:
-            count = small_3_zfb_value
+            value = small_3_zfb_value
             zfb_logs.clear()
             zfb_logs.append(f"Has small zfb +{small_3_zfb_value}")
 
         if big_3 == 3:
-            count = big_3_zfb_value
+            value = big_3_zfb_value
             zfb_logs.clear()
             zfb_logs.append(f"Has big zfb +{big_3_zfb_value}")
 
-        self.logs.append(zfb_logs)
+        self.logs.extend(zfb_logs)
 
-        return count, has_zfb
+        return wind_value if has_zfb == False else 0, has_zfb
     
     def getLogs(self):
         return self.logs
