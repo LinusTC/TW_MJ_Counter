@@ -98,7 +98,7 @@ class FullCounter:
             _add_to_log(log, temp_logs)
 
             #gong
-            value, log = self.c_gong()
+            value, log = self.c_gong_or_4_turtle()
             temp_value += value            
             _add_to_log(log, temp_logs)
 
@@ -117,10 +117,25 @@ class FullCounter:
             temp_value += value            
             _add_to_log(log, temp_logs)
 
+            #Break waist
+            value, log = self.c_break_waist(has_fan)
+            temp_value += value            
+            _add_to_log(log, temp_logs)
+            
             #Test same house
             value, log = self.c_same_house(has_fan)
             temp_value += value            
             _add_to_log(log, temp_logs)
+
+            #2 house
+            value, log = self.c_less_door(has_fan)
+            temp_value += value            
+            _add_to_log(log, temp_logs)
+
+            #5 house
+            value, log = self.c_5_doors()
+            temp_value += value            
+            _add_to_log(log, temp_logs)    
 
             #Test lao shao
             value, log = self.c_lao_shao()
@@ -130,7 +145,26 @@ class FullCounter:
             #Test ban gao
             value, log = self.c_ban_gao()
             temp_value += value            
-            _add_to_log(log, temp_logs)           
+            _add_to_log(log, temp_logs)
+            
+            #Test sister
+            value, log = self.c_sister()
+            temp_value += value            
+            _add_to_log(log, temp_logs)
+
+            #ping hu or dui dui hu
+            value, log, type_of_hu = self.c_dui_dui_or_ping_hu()
+            temp_value += value
+            _add_to_log(log, temp_logs)
+
+            if type_of_hu == 'ping_hu' and not has_flower and not has_fan:
+                temp_value += no_zifa_ping_hu_value_add_on
+                _add_to_log(f'無字花平胡再加 +{no_zifa_ping_hu_value_add_on}', temp_logs)
+
+            #dragons
+            value, log = self.c_dragons()
+            temp_value += value
+            _add_to_log(log, temp_logs)
 
             # Compare with max after processing this deck
             if temp_value > max_value:
@@ -151,7 +185,7 @@ class FullCounter:
     
     def c_door_clear_zimo(self):
         if self.mo_myself and self.door_clear: 
-            return myself_mo_value, f'門清自摸 +{door_clear_zimo_value}'
+            return door_clear_zimo_value, f'門清自摸 +{door_clear_zimo_value}'
         if self.mo_myself: 
             return myself_mo_value, f'自摸 +{myself_mo_value}'
         if self.door_clear: 
@@ -185,12 +219,13 @@ class FullCounter:
         has_fan = has_wind or has_zfb
 
         if not has_wind and not has_zfb:
-            value = wind_total_value
+            value = wind_value
             log = f'無字 +{value}'
             return value, log, has_fan, counted_pos
         
         value = wind_total_value + zfb_value
         log = self.fanCounter.getLogs()
+        print(value)
         return value, log, has_fan, counted_pos
     
     def c_16bd(self):
@@ -226,17 +261,27 @@ class FullCounter:
                 return value, log            
         return 0, None
     
-    def c_gong(self):
-        value = 0
-        log = None
+    def c_gong_or_4_turtle(self):
+        total_value = 0
+        log = []
+        gong_tiles = set()
+        
+        # Check for gongs (declared sets of 4) and track which tiles are used
         for tile_group in self.curr_validated_tiles['tiles']:
             tile_group = tile_group if isinstance(tile_group, list) else [tile_group]
             if len(tile_group) == 4:
-                value += gong_value
+                total_value += gong_value
+                log.append(f'槓{tile_group[0]} +{gong_value}')
+                # Track the tile used in gong
+                gong_tiles.add(tile_group[0])
 
-        log = f'槓 +{value}' if value > 0 else None
+        # Check for 4 turtles (4 of the same tile in hand, excluding gongs)
+        for tile, count in self.winner_tiles.items():
+            if count == 4 and tile not in gong_tiles:
+                total_value += four_turtle_value
+                log.append(f'四歸{tile} +{four_turtle_value}')
 
-        return value, log
+        return total_value, log
     
     def c_two_or_three_numbers_only(self, has_fan):
         number_set = set()
@@ -327,7 +372,7 @@ class FullCounter:
             for tile in tiles:
                 if tile not in zfb_dict and tile not in wind_dict:
                     suit = tile[0]
-                    numbers.append(combined_dict[tile])
+                    numbers.append(mst_dict[tile])
             
             if len(numbers) >= 3:
                 suits[suit].append(sorted(numbers))
@@ -356,21 +401,191 @@ class FullCounter:
 
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
-            if len(tiles) > 2:
+            if len(tiles) == 3:
                 hashed = tuple(sorted(tiles))
-                if hashed not in tested_sets:
-                    tested_sets[hashed] = 1
-                else:
-                    tested_sets[hashed] += 1
-        for _,value in tested_sets.items():
-            if value == 2:
+                tested_sets[hashed] = tested_sets.get(hashed, 0) + 1
+        
+        for _, count in tested_sets.items():
+            if count == 2:
                 total_value += ban_gao_value
                 log.append(f'般高 +{ban_gao_value}')
-            if value == 3:
+            elif count == 3:
                 total_value += two_ban_gao_value
                 log.append(f'兩般高 +{two_ban_gao_value}')
-            if value == 4:
+            elif count == 4:
                 total_value += three_ban_gao_value
                 log.append(f'三般高 +{three_ban_gao_value}')
                 
         return total_value, log
+    
+    def c_sister(self):
+        total_value = 0
+        log = []
+        sisters = {}
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if len(tiles) == 3 and tiles[0] not in zfb_dict and tiles[0] not in wind_dict:
+                numbers = set()
+                suit = tiles[0][0]
+                
+                for tile in tiles:
+                    tile_number = mst_dict[tile]
+                    numbers.add(tile_number)
+
+                if len(numbers) > 1:
+                    hashed = tuple(sorted(numbers))
+                    temp_list = sisters.get(hashed, set())
+                    temp_list.add(suit)
+                    sisters[hashed] = temp_list
+
+        for item, value in sisters.items():
+            if len(value) == 3:
+                total_value += three_sister_value
+                log.append(f'三姐妹 +{three_sister_value}')
+            if len(value) == 2:
+                total_value += sister_value
+                log.append(f'姐妹 +{sister_value}')
+
+        return total_value, log
+    
+    def c_dui_dui_or_ping_hu(self):
+        type_of_hu = None
+        number_of_pongs = 0
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if len(tiles) > 2:
+                tracker = set()        
+                for tile in tiles:
+                    tracker.add(tile)
+
+                if len(tracker) == 1:
+                    number_of_pongs += 1
+
+        if number_of_pongs == 5:
+            value = dui_dui_hu_value
+            log = f'對對胡 +{value}'
+            return value, log, 'dui_dui_hu'
+        
+        if number_of_pongs == 0:
+            value = ping_hu_value
+            log = f'平胡 +{value}'
+            return value, log, 'ping_hu'
+        
+        return 0, None, type_of_hu
+    
+    def c_dragons(self):
+        number_counter = [False] * 9
+        suit_counter = [None] * 9
+        valid_tiles = [{1, 2, 3}, {4, 5, 6}, {7, 8, 9}]
+
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if len(tiles) == 3 and tiles[0] not in zfb_dict and tiles[0] not in wind_dict:
+                numbers = set()
+                suit = tiles[0][0]
+
+                for tile in tiles:
+                    tile_number = mst_dict[tile]
+                    numbers.add(tile_number)
+
+                if numbers in valid_tiles:
+                    for number in numbers:
+                        number_counter[number - 1] = True
+                        if suit_counter[number - 1] is None:
+                            suit_counter[number - 1] = {suit}
+                        else:
+                            suit_counter[number - 1].add(suit) 
+
+        if all(number_counter):
+            same_house_dragon = False
+
+            for suit in suit_counter[0]:
+                suit_in_all = True
+                for i in range(1, len(suit_counter)):
+                    if suit not in suit_counter[i]:
+                        suit_in_all = False
+                        break
+                if suit_in_all:
+                    same_house_dragon = True
+                    break
+
+            if same_house_dragon and self.door_clear:
+                value = dark_same_dragon_value
+                log = f'暗清龍 +{value}'
+                return value, log
+
+            if same_house_dragon and not self.door_clear:
+                value = light_same_dragon_value
+                log = f'明清龍 +{value}'
+                return value, log
+
+            if not same_house_dragon and self.door_clear:
+                value = dark_mixed_dragon_value
+                log = f'暗混龍 +{value}'
+                return value, log
+            
+            if not same_house_dragon and not self.door_clear:
+                value = light_mixed_dragon_value
+                log = f'明混龍 +{value}'
+                return value, log
+
+        return 0, None
+    
+    def c_less_door(self, has_fan):
+        hu_type = self.curr_validated_tiles['hu_type']
+        if hu_type == thirteen_waist_hu or hu_type  == sixteen_bd_hu or hu_type == flower_hu:
+            return 0, None 
+        
+        doors = set()
+        if has_fan: return 0, None
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            
+            if len(tiles) > 2:
+                doors.add(tiles[0][0])
+        
+        if len(doors) > 2: return 0, None
+
+        value = less_one_door_value
+        log = f'缺一門 +{less_one_door_value}'
+
+        return value, log
+    
+    def c_5_doors(self):
+        hu_type = self.curr_validated_tiles['hu_type']
+        if hu_type == thirteen_waist_hu or hu_type  == sixteen_bd_hu or hu_type == flower_hu:
+            return 0, None       
+
+        doors = set()
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if tiles[0] in mst_dict:
+                suit = tiles[0][0]
+                doors.add(suit)
+            if tiles[0] in zfb_dict:
+                doors.add('zfb')
+            if tiles[0] in wind_dict:
+                doors.add('wind')
+
+        if len(doors) == 5:
+            value = five_door_value
+            log = f'五門齊 +{five_door_value}'
+            return value, log
+
+        return 0, None       
+
+    def c_break_waist(self, has_fan):
+        hu_type = self.curr_validated_tiles['hu_type']
+        if hu_type == thirteen_waist_hu or hu_type == flower_hu or has_fan:
+            return 0, None
+        
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            for tile in tiles:
+                if mst_dict[tile] == 1 or mst_dict[tile] == 9:
+                    return 0, None
+                
+        value = break_waist_value
+        log = f'斷腰/么 +{break_waist_value}'
+
+        return value, log

@@ -65,7 +65,7 @@ class FanCounter:
 
         self.logs.extend(wind_logs)
 
-        return wind_value if has_wind == False else 0, has_wind, counted_pos
+        return value, has_wind, counted_pos
 
     def count_zfb_value(self):
         value = 0
@@ -99,7 +99,7 @@ class FanCounter:
 
         self.logs.extend(zfb_logs)
 
-        return wind_value if has_zfb == False else 0, has_zfb
+        return value, has_zfb
     
     def getLogs(self):
         return self.logs
