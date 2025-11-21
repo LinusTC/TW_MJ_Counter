@@ -6,12 +6,13 @@ from types_of_hu import *
 from dictionary import *
 
 class FullCounter:
-    def __init__(self, winner_tiles, winner_seat, current_wind, winning_tile, mo_myself):
+    def __init__(self, winner_tiles, winner_seat, current_wind, winning_tile, mo_myself, door_clear):
         self.winner_tiles = winner_tiles
         self.winner_seat = winner_seat
         self.current_wind = current_wind
         self.winning_tile = winning_tile
         self.mo_myself = mo_myself
+        self.door_clear = door_clear
         self.deckValidator = DeckValidator(self.winner_tiles)
         self.flowerCounter = FlowerCounter(self.winner_seat, self.winner_tiles)
         self.fanCounter = FanCounter(self.winner_seat, self.winner_tiles, self.current_wind)
@@ -22,112 +23,139 @@ class FullCounter:
         self.logs = []
 
     def full_count(self):
+        max_value = 0
+        max_logs = []
+        winning_deck = None
+        winning_deck_organized = None
 
-        temp_value = 0
-        temp_logs = []
-
-        def _add_to_log(curr_log):
+        def _add_to_log(curr_log, temp_logs):
             if curr_log:
                 if isinstance(curr_log, list):
                     temp_logs.extend(curr_log)
                 else:
                     temp_logs.append(curr_log)
+
         for i in range(self.total_number_of_valid_decks):
+            # Reset for each deck solution
+            temp_value = 0
+            temp_logs = []
+            
+            # Set current deck before processing
+            self.curr_validated_tiles = self.deckValidator.possibleDecks[i]
 
             #Check bomb
             value, log, bomb_result = self.c_bomb_hu()
             if bomb_result:
                 self.final_value = value
-                _add_to_log(log)
-                return self.final_value, self.logs
+                _add_to_log(log, temp_logs)
+                return self.final_value, temp_logs
             
-            #Check zi mo
-            value, log = self.c_mo_myself()
+            #Check zi mo and door clear
+            value, log = self.c_door_clear_zimo()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #Check flower
             value, log, hu, has_flower, counted_flower_pos = self.c_flower()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
             if hu:
                 break
 
             #Check 字
             value, log, has_fan, counted_wind_pos = self.c_fan()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
             
             #No flower and no 字
             if not has_flower and not has_fan:
                 temp_value += noFlower_noZFB_nowind_value_add_on
-                _add_to_log(f'無字無花再加 +{noFlower_noZFB_nowind_value_add_on}')
+                _add_to_log(f'無字無花再加 +{noFlower_noZFB_nowind_value_add_on}', temp_logs)
 
             #正花正位
             if counted_flower_pos and counted_wind_pos:
                 temp_value += flower_wind_seat_value_add_on
-                _add_to_log(f'正花正位再加 +{flower_wind_seat_value_add_on}')
+                _add_to_log(f'正花正位再加 +{flower_wind_seat_value_add_on}', temp_logs)
 
             #16bd
             value, log = self.c_16bd()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #13 waist
             value, log = self.c_13waist()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #Ligu
             value, log = self.c_ligu()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #general eyes
             value, log = self.c_general_eyes()
             temp_value += value
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #gong
             value, log = self.c_gong()
             temp_value += value            
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #2 or 3 numbers only
             value, log = self.c_two_or_three_numbers_only(has_fan)
             temp_value += value            
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #Only fan tiles
             value, log = self.c_only_fan()
             temp_value += value            
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #Only 1 9 tiles
             value, log = self.c_only_one_or_nine(has_fan)
             temp_value += value            
-            _add_to_log(log)
+            _add_to_log(log, temp_logs)
 
             #Test same house
             value, log = self.c_same_house(has_fan)
             temp_value += value            
-            _add_to_log(log)                 
+            _add_to_log(log, temp_logs)
 
-            self.curr_validated_tiles = self.deckValidator.possibleDecks[i]
+            #Test lao shao
+            value, log = self.c_lao_shao()
+            temp_value += value            
+            _add_to_log(log, temp_logs)    
 
-        self.final_value = temp_value
-        self.logs = temp_logs
+            #Test ban gao
+            value, log = self.c_ban_gao()
+            temp_value += value            
+            _add_to_log(log, temp_logs)           
 
-        return self.final_value, self.logs
+            # Compare with max after processing this deck
+            if temp_value > max_value:
+                max_value = temp_value
+                max_logs = temp_logs
+                winning_deck = self.winner_tiles
+                winning_deck_organized = self.curr_validated_tiles
+
+        self.final_value = max_value
+        self.logs = max_logs
+
+        return self.final_value, self.logs, winning_deck, winning_deck_organized
     
     def c_bomb_hu(self):
         if not self.valid:
             return -explode_hu_value, f'炸胡， 每家賠-{explode_hu_value}', True
         return 0, None, False
     
-    def c_mo_myself(self):
+    def c_door_clear_zimo(self):
+        if self.mo_myself and self.door_clear: 
+            return myself_mo_value, f'門清自摸 +{door_clear_zimo_value}'
         if self.mo_myself: 
             return myself_mo_value, f'自摸 +{myself_mo_value}'
+        if self.door_clear: 
+            return door_clear_value, f'門清 +{door_clear_value}'
         return 0, None
 
     def c_flower(self):
@@ -285,3 +313,64 @@ class FullCounter:
         value = same_house_with_fan_value if has_fan else all_same_house_value
         log = f'混一色 +{value}' if has_fan else f'清一色 +{value}'
         return value, log
+    
+    def c_lao_shao(self):
+        value = 0
+        log = []
+        suits = {'m': [], 's': [], 't': []}
+        
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            numbers = []
+            suit = None
+            
+            for tile in tiles:
+                if tile not in zfb_dict and tile not in wind_dict:
+                    suit = tile[0]
+                    numbers.append(combined_dict[tile])
+            
+            if len(numbers) >= 3:
+                suits[suit].append(sorted(numbers))
+        
+        # Check each suit for lao shao patterns
+        for suit, tile_group in suits.items():
+            has_123 = [1, 2, 3] in tile_group
+            has_789 = [7, 8, 9] in tile_group
+            has_111 = [1, 1, 1] in tile_group
+            has_999 = [9, 9, 9] in tile_group
+            
+            if has_123 and has_789:
+                value += lao_shao_value
+                log.append(f'老少{suit} +{lao_shao_value}')
+            if has_111 and has_999:
+                value += lao_shao_value
+                log.append(f'老少{suit} +{lao_shao_value}')
+        
+        return value, log
+
+    def c_ban_gao(self):
+        total_value = 0
+        log = []
+
+        tested_sets = {}
+
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if len(tiles) > 2:
+                hashed = tuple(sorted(tiles))
+                if hashed not in tested_sets:
+                    tested_sets[hashed] = 1
+                else:
+                    tested_sets[hashed] += 1
+        for _,value in tested_sets.items():
+            if value == 2:
+                total_value += ban_gao_value
+                log.append(f'般高 +{ban_gao_value}')
+            if value == 3:
+                total_value += two_ban_gao_value
+                log.append(f'兩般高 +{two_ban_gao_value}')
+            if value == 4:
+                total_value += three_ban_gao_value
+                log.append(f'三般高 +{three_ban_gao_value}')
+                
+        return total_value, log

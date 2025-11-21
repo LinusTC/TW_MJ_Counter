@@ -13,9 +13,10 @@ wind_seat_value = 1 #done
 
 zfb_value = 2 #done
 real_solo_value = 2
-same_shang_value = 2
 sister_pong_value = 2
 flower_wind_seat_value_add_on = 1 #done
+door_clear_value = 3 #done
+door_clear_zimo_value = 5 #done
 
 four_turtle_value = 5
 mixed_dragon_value = 5
@@ -25,6 +26,10 @@ break_waist_value = 5
 noFlower_noZFB_nowind_value_add_on = 3 #done
 five_door_value = 5
 three_sister_value = 5
+
+ban_gao_value = 2
+two_ban_gao_value = 10
+three_ban_gao_value = 20
 
 same_dragon_value = 10
 no_zifa_ping_hu_value = 12

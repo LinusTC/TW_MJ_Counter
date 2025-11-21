@@ -16,33 +16,28 @@ class DeckValidator:
         flower_results = self.flower_hu_check(self.winner_tiles)
         if flower_results:
             self.possibleDecks.append(flower_results)
-            return True
         
         #Check Ligu
         ligu_results = self.ligu_check(self.winner_tiles_no_flower)
         if ligu_results:
             self.possibleDecks.append(ligu_results)
-            return True
         
         #Check 16bd
         sixteen_bd_results = self.sixteen_bd_check(self.winner_tiles_no_flower)
         if sixteen_bd_results:
             self.possibleDecks.append(sixteen_bd_results)
-            return True
         
         #Check 13 waist
         thirteen_results = self.thirteen_waist_check(self.winner_tiles_no_flower)
         if thirteen_results:
             self.possibleDecks.append(thirteen_results)
-            return True
         
         #Check Standard, uses extend because there can be multiple iterations
         standard_results = self.standard_check(self.winner_tiles_no_flower)
         if standard_results:
             self.possibleDecks.extend(standard_results)
-            return True
 
-        return False
+        return len(self.possibleDecks) > 0
 
     def card_count(self, tiles):
         count = 0
@@ -201,23 +196,21 @@ class DeckValidator:
         results = []
 
         for eye, remaining_tiles in possible_eyes:
-            complete_sets = []
-            complete_sets.append([eye, eye])
-            memo = {}
-            if self.top_down_dfs(remaining_tiles, memo, complete_sets):
+            all_solutions = []
+            self.top_down_dfs(remaining_tiles, [], all_solutions)
+            
+            for solution in all_solutions:
+                complete_sets = [[eye, eye]] + solution
                 if len(complete_sets) == 6:
                     results.append({'hu_type': standard_hu, 'eyes': eye, 'tiles': complete_sets})
 
         return results
 
-    def top_down_dfs(self, tiles, memo, complete_sets):
+    def top_down_dfs(self, tiles, current_sets, all_solutions):
         if not tiles:
-            return True
-        
-        #Convert tuple so that it can be stored in dictionary
-        sorted_tiles = tuple(sorted(tiles.items()))
-        if sorted_tiles in memo:
-            return memo[sorted_tiles]
+            # Found a complete solution, add a copy to all_solutions
+            all_solutions.append(current_sets.copy())
+            return
         
         #Get a tile from the tiles
         temp = min(tiles.keys())
@@ -228,10 +221,9 @@ class DeckValidator:
             next_tiles[temp] -= 4
             next_tiles = clean_tiles(next_tiles)
 
-            if self.top_down_dfs(next_tiles, memo, complete_sets):
-                memo[sorted_tiles] = True
-                complete_sets.append([temp, temp, temp, temp])
-                return True
+            current_sets.append([temp, temp, temp, temp])
+            self.top_down_dfs(next_tiles, current_sets, all_solutions)
+            current_sets.pop()  # Backtrack
 
         #2. Try Pong
         if self.test_pong(tiles, temp):
@@ -239,10 +231,9 @@ class DeckValidator:
             next_tiles[temp] -= 3
             next_tiles = clean_tiles(next_tiles)
 
-            if self.top_down_dfs(next_tiles, memo, complete_sets):
-                memo[sorted_tiles] = True
-                complete_sets.append([temp, temp, temp])
-                return True
+            current_sets.append([temp, temp, temp])
+            self.top_down_dfs(next_tiles, current_sets, all_solutions)
+            current_sets.pop()  # Backtrack
         
         #3. Try Shang
         if self.test_shang(tiles, temp):
@@ -261,13 +252,9 @@ class DeckValidator:
             next_tiles[tile_plus_2] -= 1
             next_tiles = clean_tiles(next_tiles)
             
-            if self.top_down_dfs(next_tiles, memo, complete_sets):
-                memo[sorted_tiles] = True
-                complete_sets.append([temp, tile_plus_1, tile_plus_2])
-                return True
-        
-        memo[sorted_tiles] = False
-        return False
+            current_sets.append([temp, tile_plus_1, tile_plus_2])
+            self.top_down_dfs(next_tiles, current_sets, all_solutions)
+            current_sets.pop()  # Backtrack
            
     def test_pong(self, tiles, curr_tile):            
         return tiles[curr_tile] >= 3
