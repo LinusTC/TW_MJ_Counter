@@ -152,6 +152,11 @@ class FullCounter:
             temp_value += value            
             _add_to_log(log, temp_logs)
 
+            #Test sister pong
+            value, log = self.c_sister_pong()
+            temp_value += value            
+            _add_to_log(log, temp_logs)
+
             #ping hu or dui dui hu
             value, log, type_of_hu = self.c_dui_dui_or_ping_hu()
             temp_value += value
@@ -447,7 +452,37 @@ class FullCounter:
                 log.append(f'姐妹 +{sister_value}')
 
         return total_value, log
-    
+
+    def c_sister_pong(self):
+        total_value = 0
+        log = []
+        sisters = {}
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if len(tiles) == 3 and tiles[0] not in zfb_dict and tiles[0] not in wind_dict:
+                numbers = set()
+                suit = tiles[0][0]
+                
+                for tile in tiles:
+                    tile_number = mst_dict[tile]
+                    numbers.add(tile_number)
+
+                if len(numbers) == 1:
+                    hashed = list(numbers)[0]
+                    temp_list = sisters.get(hashed, set())
+                    temp_list.add(suit)
+                    sisters[hashed] = temp_list
+        
+        for item, value in sisters.items():
+            if len(value) == 3:
+                total_value += three_sister_pong_value
+                log.append(f'三相逢{item}號牌 +{three_sister_pong_value}')
+            if len(value) == 2:
+                total_value += sister_pong_value
+                log.append(f'兩相逢{item}號牌 +{sister_pong_value}')
+
+        return total_value, log
+
     def c_dui_dui_or_ping_hu(self):
         type_of_hu = None
         number_of_pongs = 0

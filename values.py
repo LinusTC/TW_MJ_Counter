@@ -13,10 +13,12 @@ wind_seat_value = 1 #done
 
 zfb_value = 2 #done
 real_solo_value = 2
-sister_pong_value = 2
 flower_wind_seat_value_add_on = 1 #done
 door_clear_value = 3 #done
 door_clear_zimo_value = 5 #done
+
+sister_pong_value = 2 #done
+three_sister_pong_value = 5 #done
 
 four_turtle_value = 5 #done
 ping_hu_value = 5 #done
