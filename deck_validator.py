@@ -194,6 +194,7 @@ class DeckValidator:
                 possible_eyes.append((key, temp))
         
         results = []
+        seen_decks = set()
 
         for eye, remaining_tiles in possible_eyes:
             all_solutions = []
@@ -202,7 +203,13 @@ class DeckValidator:
             for solution in all_solutions:
                 complete_sets = [[eye, eye]] + solution
                 if len(complete_sets) == 6:
-                    results.append({'hu_type': standard_hu, 'eyes': eye, 'tiles': complete_sets})
+                    sorted_sets = [tuple(sorted(s)) for s in complete_sets]
+                    sorted_sets = tuple(sorted(sorted_sets))
+                    
+                    if sorted_sets not in seen_decks:
+                        seen_decks.add(sorted_sets)
+                        complete_sets = sorted(complete_sets)
+                        results.append({'hu_type': standard_hu, 'eyes': eye, 'tiles': complete_sets})
 
         return results
 

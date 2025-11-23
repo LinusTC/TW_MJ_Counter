@@ -4,15 +4,11 @@ gong_value = 1 #done
 general_eye_value = 1 #done
 sister_value = 1 #done
 lao_shao_value = 1 #done
-fake_solo_value = 1
-double_pong_value = 1
-myself_mo_value = 1 #done
 flower_seat_value = 1 #done
 wind_wind_value = 1 #done
 wind_seat_value = 1 #done
 
 zfb_value = 2 #done
-real_solo_value = 2
 flower_wind_seat_value_add_on = 1 #done
 door_clear_value = 3 #done
 door_clear_zimo_value = 5 #done
@@ -20,7 +16,13 @@ door_clear_zimo_value = 5 #done
 sister_pong_value = 2 #done
 three_sister_pong_value = 5 #done
 
-four_turtle_value = 5 #done
+myself_mo_value = 1 #done
+fake_solo_value = 1
+double_pong_value = 1
+real_solo_value = 2
+
+light_four_turtle_value = 3 #done
+dark_four_turtle_value = 5 #done
 ping_hu_value = 5 #done
 less_one_door_value = 5 #done
 break_waist_value = 5 #done

@@ -282,9 +282,12 @@ class FullCounter:
 
         # Check for 4 turtles (4 of the same tile in hand, excluding gongs)
         for tile, count in self.winner_tiles.items():
-            if count == 4 and tile not in gong_tiles:
-                total_value += four_turtle_value
-                log.append(f'四歸{tile} +{four_turtle_value}')
+            if count == 4 and tile not in gong_tiles and self.door_clear:
+                total_value += dark_four_turtle_value
+                log.append(f'暗四歸{tile} +{dark_four_turtle_value}')
+            if count == 4 and tile not in gong_tiles and not self.door_clear:
+                total_value += light_four_turtle_value
+                log.append(f'明四歸{tile} +{light_four_turtle_value}')
 
         return total_value, log
     

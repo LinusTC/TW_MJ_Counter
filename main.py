@@ -7,7 +7,7 @@ if __name__ == "__main__":
     sixteenbd_test = {'m1': 1, 'm5': 1, 'm9': 1, 's1': 1, 's4': 1, 's7': 1, 't1': 1, 't6': 1, 't9': 1, 'east': 1, 'south': 1, 'west': 2, 'north': 1, 'zhong': 1, 'fa': 1, 'bai':1}
     Thirteen_waist_test = {'m1': 1, 'm9':1, 's1': 1, 's9':1, 't1': 1, 't7':1, 't8':1, 't9':3, 'east': 1, 'south': 1, 'west': 1, 'north': 1, 'zhong': 1, 'fa': 1, 'bai':1}
     ligu_test = {'m1': 4, 'm5': 4, 't1': 4, 'zhong': 2, 'bai': 3}
-    standard_test = {'m2': 3,'m3': 2, 'm4':0, 's2': 3, 'm7': 3, 's7':3, 't7': 3, 's4': 0}
+    standard_test = {'m1': 2, 'm2':2, 'm3':2, 'f2':1, 'f1': 1, 'ff4': 1, 'm4': 2, 's5': 3, 's2':1, 's3': 1, 's4': 1, 't1': 1, 't2': 1, 't3':1}
 
     winner_seat = 2
     curr_wind = 'west'
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     has_valid_deck = deck_validator.full_check()
     # All test cases
     tests = {
-        'Standard': standard_test
+        'Standard': ligu_test
     }
     
     # Run all tests
@@ -34,7 +34,7 @@ if __name__ == "__main__":
             for item in deck_validator.possibleDecks:
                 print(f'Deck: {item}')
             
-            full_counter = FullCounter(test_tiles, winner_seat, curr_wind, 'm7', False, False)
+            full_counter = FullCounter(test_tiles, winner_seat, curr_wind, 'm7', False, True)
             count, logs, winning_deck, winning_deck_organized = full_counter.full_count()
             print(f'Count: {count}')
             print(f'Logs: {logs}')
