@@ -1,6 +1,7 @@
 from flower_counter import FlowerCounter
 from fan_counter import FanCounter
 from deck_validator import DeckValidator
+from helpers import *
 from values import *
 from types_of_hu import *
 from dictionary import *
@@ -39,7 +40,6 @@ class FullCounter:
             # Reset for each deck solution
             temp_value = 0
             temp_logs = []
-            
             # Set current deck before processing
             self.curr_validated_tiles = self.deckValidator.possibleDecks[i]
 
@@ -54,7 +54,6 @@ class FullCounter:
             value, log = self.c_door_clear_zimo()
             temp_value += value
             _add_to_log(log, temp_logs)
-
             #Check flower
             value, log, hu, has_flower, counted_flower_pos = self.c_flower()
             temp_value += value
@@ -194,11 +193,12 @@ class FullCounter:
         return 0, None, False
     
     def c_door_clear_zimo(self):
-        if self.mo_myself and self.door_clear: 
+        is_special_hu = check_is_special_hu(self.curr_validated_tiles)
+        if self.mo_myself and self.door_clear and not is_special_hu: 
             return door_clear_zimo_value, f'門清自摸 +{door_clear_zimo_value}'
         if self.mo_myself: 
             return myself_mo_value, f'自摸 +{myself_mo_value}'
-        if self.door_clear: 
+        if self.door_clear and not is_special_hu: 
             return door_clear_value, f'門清 +{door_clear_value}'
         return 0, None
 
@@ -224,8 +224,7 @@ class FullCounter:
         return 0, None, False, False, False
     
     def c_fan(self):
-        wind_total_value, has_wind, counted_pos = self.fanCounter.count_wind_value()
-        zfb_value, has_zfb = self.fanCounter.count_zfb_value()
+        total_fan_value, has_wind, has_zfb, counted_pos = self.fanCounter.count_wind_and_zfb_value()
         has_fan = has_wind or has_zfb
 
         if not has_wind and not has_zfb:
@@ -233,9 +232,8 @@ class FullCounter:
             log = f'無字 +{value}'
             return value, log, has_fan, counted_pos
         
-        value = wind_total_value + zfb_value
+        value = total_fan_value + zfb_value
         log = self.fanCounter.getLogs()
-        print(value)
         return value, log, has_fan, counted_pos
     
     def c_16bd(self):
@@ -276,16 +274,13 @@ class FullCounter:
         log = []
         gong_tiles = set()
         
-        # Check for gongs (declared sets of 4) and track which tiles are used
         for tile_group in self.curr_validated_tiles['tiles']:
             tile_group = tile_group if isinstance(tile_group, list) else [tile_group]
             if len(tile_group) == 4:
                 total_value += gong_value
                 log.append(f'槓{tile_group[0]} +{gong_value}')
-                # Track the tile used in gong
                 gong_tiles.add(tile_group[0])
 
-        # Check for 4 turtles (4 of the same tile in hand, excluding gongs)
         for tile, count in self.winner_tiles.items():
             if count == 4 and tile not in gong_tiles and self.door_clear:
                 total_value += dark_four_turtle_value
@@ -375,7 +370,7 @@ class FullCounter:
     def c_lao_shao(self):
         value = 0
         log = []
-        suits = {'m': [], 's': [], 't': []}
+        suits = {tsm_name[0]: [], tsm_name[1]: [], tsm_name[2]: []}
         
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
@@ -493,6 +488,11 @@ class FullCounter:
 
     def c_dui_dui_or_ping_hu(self):
         type_of_hu = None
+        is_special_hu = check_is_special_hu(self.curr_validated_tiles)
+        # Skip duidui/pinghu counting for special hu types
+        if is_special_hu:
+            return 0, None, type_of_hu
+        
         number_of_pongs = 0
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
@@ -575,8 +575,8 @@ class FullCounter:
         return 0, None
     
     def c_less_door(self, has_fan):
-        hu_type = self.curr_validated_tiles['hu_type']
-        if hu_type == thirteen_waist_hu or hu_type  == sixteen_bd_hu or hu_type == flower_hu:
+        is_special_hu = check_is_special_hu(self.curr_validated_tiles)
+        if is_special_hu:
             return 0, None 
         
         doors = set()
@@ -595,8 +595,8 @@ class FullCounter:
         return value, log
     
     def c_5_doors(self):
-        hu_type = self.curr_validated_tiles['hu_type']
-        if hu_type == thirteen_waist_hu or hu_type  == sixteen_bd_hu or hu_type == flower_hu:
+        is_special_hu = check_is_special_hu(self.curr_validated_tiles)
+        if is_special_hu:
             return 0, None       
 
         doors = set()

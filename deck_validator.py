@@ -8,14 +8,14 @@ class DeckValidator:
         self.possibleDecks = []
 
     def full_check(self):
-        #Check there are 17 or more tiles
-        if self.card_count(self.winner_tiles_no_flower) < 17:
-            return False
-        
         #Check flower hu
         flower_results = self.flower_hu_check(self.winner_tiles)
         if flower_results:
             self.possibleDecks.append(flower_results)
+
+        #Check there are 17 or more tiles
+        if self.card_count(self.winner_tiles_no_flower) < 17 and not flower_results:
+            return False
         
         #Check 16bd
         sixteen_bd_results = self.sixteen_bd_check(self.winner_tiles_no_flower)

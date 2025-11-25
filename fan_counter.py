@@ -7,6 +7,14 @@ class FanCounter:
         self.winner_tiles = winner_tiles
         self.curr_wind = curr_wind
         self.logs = []
+
+    def count_wind_and_zfb_value(self):
+        self.logs = []  # Reset logs for each count
+        wind_value, has_wind, counted_pos = self.count_wind_value()
+        zfb_value, has_zfb = self.count_zfb_value()
+
+        total_fan_value = wind_value + zfb_value
+        return total_fan_value, has_wind, has_zfb, counted_pos
     
     def count_wind_value(self):
         value = 0

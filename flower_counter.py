@@ -8,6 +8,7 @@ class FlowerCounter:
         self.logs = []
 
     def count_flower_value(self):
+        self.logs = []  # Reset logs for each count
         value = 0
         has_flower = False
         counted_pos = False
