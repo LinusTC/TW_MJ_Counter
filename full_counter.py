@@ -60,7 +60,12 @@ class FullCounter:
             temp_value += value
             _add_to_log(log, temp_logs)
             if hu:
-                break
+                if temp_value > max_value:
+                    max_value = temp_value
+                    max_logs = temp_logs
+                    winning_deck = self.winner_tiles
+                    winning_deck_organized = self.curr_validated_tiles
+                continue
 
             #Check 字
             value, log, has_fan, counted_wind_pos = self.c_fan()
@@ -206,7 +211,7 @@ class FullCounter:
             log = f'無花 +{value}'
             return value, log, has_flower_hu, has_flower, counted_pos
 
-        if (has_flower_hu):
+        if has_flower_hu:
             value = seven_flower_value if len(self.curr_validated_tiles['flowers']) == 7 else eight_flower_value
             log = f'花胡 +{value}'
             return value, log, has_flower_hu, has_flower, counted_pos

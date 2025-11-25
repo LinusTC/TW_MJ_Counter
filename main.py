@@ -17,7 +17,7 @@ if __name__ == "__main__":
     has_valid_deck = deck_validator.full_check()
     # All test cases
     tests = {
-        'Standard': ligu_test
+        'Thirteen_waist_test': fa_test
     }
     
     # Run all tests

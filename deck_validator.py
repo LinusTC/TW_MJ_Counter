@@ -17,20 +17,20 @@ class DeckValidator:
         if flower_results:
             self.possibleDecks.append(flower_results)
         
-        #Check Ligu
-        ligu_results = self.ligu_check(self.winner_tiles_no_flower)
-        if ligu_results:
-            self.possibleDecks.append(ligu_results)
-        
         #Check 16bd
         sixteen_bd_results = self.sixteen_bd_check(self.winner_tiles_no_flower)
         if sixteen_bd_results:
             self.possibleDecks.append(sixteen_bd_results)
-        
+
         #Check 13 waist
         thirteen_results = self.thirteen_waist_check(self.winner_tiles_no_flower)
         if thirteen_results:
             self.possibleDecks.append(thirteen_results)
+
+        #Check Ligu
+        ligu_results = self.ligu_check(self.winner_tiles_no_flower)
+        if ligu_results:
+            self.possibleDecks.append(ligu_results)
         
         #Check Standard, uses extend because there can be multiple iterations
         standard_results = self.standard_check(self.winner_tiles_no_flower)
@@ -152,9 +152,9 @@ class DeckValidator:
             tiles_to_remove.append(f'{prefix}9')
             return f'{prefix}1' in tiles and f'{prefix}9' in tiles
             
-        if not thirteen_helper('t', tiles): return []
-        if not thirteen_helper('s', tiles): return []
-        if not thirteen_helper('m', tiles): return []
+        if not thirteen_helper(tsm_name[0], tiles): return []
+        if not thirteen_helper(tsm_name[1], tiles): return []
+        if not thirteen_helper(tsm_name[2], tiles): return []
         
         possible_eyes = []
 
@@ -172,12 +172,15 @@ class DeckValidator:
                     remaining_tiles[key] -= 1
             remaining_tiles = clean_tiles(remaining_tiles)
 
-            complete_sets = []
-            memo = {}
+            all_solutions = []
+            self.top_down_dfs(remaining_tiles, [], all_solutions)
 
-            if self.top_down_dfs(remaining_tiles, memo, complete_sets):
-                tiles_list = complete_sets + tiles_to_remove.copy()
-                tiles_list.append(eye)
+            if all_solutions:
+                # Use the first valid solution and flatten it
+                tiles_list = [[eye, eye]]
+                tiles_list.extend(all_solutions[0])
+                for tile in tiles_to_remove:
+                    tiles_list.append([tile])
                 return {'hu_type':thirteen_waist_hu, 'eyes': eye, 'tiles': tiles_list}
 
         return []
