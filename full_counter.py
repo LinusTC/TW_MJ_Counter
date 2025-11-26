@@ -100,6 +100,11 @@ class FullCounter:
             temp_value += value
             _add_to_log(log, temp_logs)
 
+            #duk duk, jia duk
+            value, log = self.c_duk_duk_jia_duk_dui_pong()
+            temp_value += value
+            _add_to_log(log, temp_logs)
+
             #general eyes
             value, log = self.c_general_eyes()
             temp_value += value
@@ -211,7 +216,30 @@ class FullCounter:
         if self.door_clear and not is_special_hu: 
             return door_clear_value, f'門清 +{door_clear_value}'
         return 0, None
+    
+    def c_duk_duk_jia_duk_dui_pong(self):
+        if not self.winning_tile:
+            return 0, None
+            
+        is_special_hu = check_is_special_hu(self.curr_validated_tiles)
+        if is_special_hu:
+            return 0, None
+        
+        groups_with_winning_tile = {}
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            if self.winning_tile in tiles:
+                remaining_tiles = tiles.copy()
+                remaining_tiles.remove(self.winning_tile)
+                groups_with_winning_tile[tuple(tiles)] = remaining_tiles
+                    
+        print(groups_with_winning_tile)
+        for tile_grp, incomplete_group in groups_with_winning_tile.items():
+            tilesssss = find_tiles_that_complete_set(incomplete_group)
+            print(tilesssss)
 
+        return 0, None
+    
     def c_flower(self):
         flower_value, has_flower, counted_pos = self.flowerCounter.count_flower_value()
         has_flower_hu = self.curr_validated_tiles['hu_type'] == flower_hu
