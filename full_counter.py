@@ -7,13 +7,15 @@ from types_of_hu import *
 from dictionary import *
 
 class FullCounter:
-    def __init__(self, winner_tiles, winner_seat, current_wind, winning_tile, mo_myself, door_clear):
+    def __init__(self, winner_tiles, winner_seat, current_wind, winning_tile, mo_myself, door_clear, base_value, multiplier):
         self.winner_tiles = winner_tiles
         self.winner_seat = winner_seat
         self.current_wind = current_wind
         self.winning_tile = winning_tile
         self.mo_myself = mo_myself
         self.door_clear = door_clear
+        self.base_value = base_value
+        self.multiplier = multiplier
         self.deckValidator = DeckValidator(self.winner_tiles)
         self.flowerCounter = FlowerCounter(self.winner_seat, self.winner_tiles)
         self.fanCounter = FanCounter(self.winner_seat, self.winner_tiles, self.current_wind)
@@ -37,11 +39,13 @@ class FullCounter:
                     temp_logs.append(curr_log)
 
         for i in range(self.total_number_of_valid_decks):
-            # Reset for each deck solution
             temp_value = 0
             temp_logs = []
-            # Set current deck before processing
             self.curr_validated_tiles = self.deckValidator.possibleDecks[i]
+
+            '-------------------------------------------------------------------------'
+            '--------------------------------ALL COUNTS-------------------------------'
+            '-------------------------------------------------------------------------'
 
             #Check bomb
             value, log, bomb_result = self.c_bomb_hu()
@@ -175,7 +179,13 @@ class FullCounter:
             temp_value += value
             _add_to_log(log, temp_logs)
 
+            '-------------------------------------------------------------------------'
+
+            # Add base and multiplier
+            temp_value += self.base_value
+            temp_value *= self.multiplier
             # Compare with max after processing this deck
+
             if temp_value > max_value:
                 max_value = temp_value
                 max_logs = temp_logs

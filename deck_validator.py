@@ -288,3 +288,6 @@ class DeckValidator:
                 tiles[curr_tile] >= 1 and 
                 tiles[tile_plus_1] >= 1 and 
                 tiles[tile_plus_2] >= 1)
+    
+    def get_validated_decks(self):
+        return self.possibleDecks
