@@ -17,9 +17,9 @@ sister_pong_value = 2 #done
 three_sister_pong_value = 5 #done
 
 myself_mo_value = 1 #done
-fake_solo_value = 1
-double_pong_value = 1
-real_solo_value = 2
+fake_solo_value = 1 #done
+double_pong_value = 1 #done
+real_solo_value = 2 #done
 
 light_four_turtle_value = 3 #done
 dark_four_turtle_value = 5 #done
