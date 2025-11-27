@@ -23,15 +23,15 @@ def check_is_special_hu(validated_deck):
 
 def find_tiles_that_complete_set(incomplete_set):
     if len(incomplete_set) > 2: 
-        return []
+        return {}
     
     #Eyes 
     if len(incomplete_set) == 1:
-        return [incomplete_set[0]]
+        return {'complete_type' : eyes,'tiles': [incomplete_set[0]]}
 
     #Pong
     if incomplete_set[0] == incomplete_set[1]:
-        return [incomplete_set[0]]
+        return {'complete_type' : pong, 'tiles': [incomplete_set[0]]}
 
     #Shang 
     if incomplete_set[0] != incomplete_set[1]:  
@@ -47,6 +47,6 @@ def find_tiles_that_complete_set(incomplete_set):
                 possible.append(f'{suit}{num1 - 1}')
             if num2 + 1 < 10:
                 possible.append(f'{suit}{num2 + 1}')
-            return possible
+            return {'complete_type' : shang, 'tiles': possible}
         else:
-            return [f'{suit}{num1 + 1}']
+            return {'complete_type' : shang, 'tiles': [f'{suit}{num1 + 1}']}
