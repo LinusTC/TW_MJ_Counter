@@ -16,8 +16,9 @@ if __name__ == "__main__":
     image_path = filedialog.askopenfilename(
         title="選擇麻將牌圖片 / Select Mahjong Tiles Image",
         filetypes=[
-            ("Image files", "*.jpg *.jpeg *.png *.bmp"),
+            ("Image files", "*.jpg *.jpeg *.png *.bmp *.heic"),
             ("JPEG files", "*.jpg *.jpeg"),
+            ("HEIC files", "*.heic *.heic"),
             ("PNG files", "*.png"),
             ("All files", "*.*")
         ]
