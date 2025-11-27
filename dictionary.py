@@ -8,3 +8,7 @@ flower_dict = {'f1' : 1, 'f2' : 2, 'f3' : 3, 'f4' : 4, 'ff1' : 1, 'ff2' : 2, 'ff
 seat_dict = {1: 'east', 2: 'south', 3: 'west', 4: 'north'}
 
 mst_dict = m_dict | t_dict | s_dict
+
+eyes = 'eyes'
+shang = 'shang'
+pong = 'pong'

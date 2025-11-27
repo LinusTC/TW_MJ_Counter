@@ -225,6 +225,7 @@ class FullCounter:
         if is_special_hu:
             return 0, None
         
+        # Find all groups containing the winning tile
         groups_with_winning_tile = {}
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
@@ -232,12 +233,32 @@ class FullCounter:
                 remaining_tiles = tiles.copy()
                 remaining_tiles.remove(self.winning_tile)
                 groups_with_winning_tile[tuple(tiles)] = remaining_tiles
-                    
-        print(groups_with_winning_tile)
-        for tile_grp, incomplete_group in groups_with_winning_tile.items():
-            tilesssss = find_tiles_that_complete_set(incomplete_group)
-            print(tilesssss)
 
+        possible_tiles_list = [
+            find_tiles_that_complete_set(incomplete_group)
+            for incomplete_group in groups_with_winning_tile.values()
+        ]
+
+        if len(groups_with_winning_tile) == 1:
+            possible_tiles = possible_tiles_list[0]
+            if len(possible_tiles['tiles']) == 1 and (possible_tiles['complete_type'] == shang or possible_tiles['complete_type'] == eyes):
+                value = real_solo_value
+                log = f'獨獨 +{real_solo_value}'
+                return value, log
+
+        if len(groups_with_winning_tile) > 1:
+            for item in possible_tiles_list:
+                if (item['complete_type'] == shang or item['complete_type'] == eyes) and len(item['tiles']) == 1:
+                    value = fake_solo_value
+                    log = f'假獨 +{fake_solo_value}'
+                    return value, log
+
+        for item in possible_tiles_list:
+            if item['complete_type'] == pong:
+                value = double_pong_value
+                log = f'對碰 +{double_pong_value}'
+                return value, log
+            
         return 0, None
     
     def c_flower(self):
