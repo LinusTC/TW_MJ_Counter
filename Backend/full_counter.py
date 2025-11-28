@@ -684,7 +684,7 @@ class FullCounter:
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
             for tile in tiles:
-                if mst_dict[tile] == 1 or mst_dict[tile] == 9:
+                if mst_dict[tile] == 1 or mst_dict[tile] == 9 or tile in zfb_dict or tile in wind_dict:
                     return 0, None
                 
         value = break_waist_value
