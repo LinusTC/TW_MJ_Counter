@@ -36,7 +36,7 @@ class DeckValidator:
             self.possibleDecks.extend(ligu_results)
         
         #Check Standard, uses extend because there can be multiple iterations
-        standard_results = self.standard_check(self.winner_tiles_no_flower)
+        standard_results = self.standard_check(self.winner_tiles_no_joker_no_flower,self.joker_number)
         if standard_results:
             self.possibleDecks.extend(standard_results)
 
@@ -66,10 +66,9 @@ class DeckValidator:
         if (self.card_count(tiles) + joker_number) != 17:
             return []
 
-        tile_types = sorted(ALL_TILES)
         base_counts = tiles.copy()
         results = []
-        seen_configs = set()
+        seen_decks = set()
 
         def pairs_needed_remaining(counts, jokers_left, needed_pairs):
             return (self.card_count(counts) + jokers_left) >= needed_pairs * 2
@@ -79,14 +78,14 @@ class DeckValidator:
                 collected.append([pair.copy() for pair in current_pairs])
                 return
 
-            if start_idx >= len(tile_types):
+            if start_idx >= len(ALL_TILES):
                 return
 
             if not pairs_needed_remaining(counts, jokers_left, pairs_needed):
                 return
 
-            for idx in range(start_idx, len(tile_types)):
-                tile = tile_types[idx]
+            for idx in range(start_idx, len(ALL_TILES)):
+                tile = ALL_TILES[idx]
                 available = counts.get(tile, 0)
 
                 if available >= 2:
@@ -112,7 +111,7 @@ class DeckValidator:
                     pair_dfs(idx, counts, jokers_left - 2, pairs_needed - 1, current_pairs, collected)
                     current_pairs.pop()
 
-        for triplet_tile in tile_types:
+        for triplet_tile in ALL_TILES:
             available = base_counts.get(triplet_tile, 0)
             max_joker_use = min(3, joker_number)
 
@@ -137,10 +136,10 @@ class DeckValidator:
                     full_tiles.append([triplet_tile, triplet_tile, triplet_tile])
                     normalized = tuple(sorted((tuple(group) for group in full_tiles), key=lambda grp: (len(grp), grp)))
 
-                    if normalized in seen_configs:
+                    if normalized in seen_decks:
                         continue
 
-                    seen_configs.add(normalized)
+                    seen_decks.add(normalized)
                     ordered_tiles = [list(group) for group in normalized]
                     results.append({'hu_type': ligu_hu, 'eyes': None, 'tiles': ordered_tiles})
 
@@ -292,137 +291,231 @@ class DeckValidator:
         return complete_decks            
             
     def thirteen_waist_check(self, tiles, joker_number):
-        if ((self.card_count(tiles) + joker_number) != 17): return []
+        if (self.card_count(tiles) + joker_number) != 17:
+            return []
 
-        missing_tiles = []
-        #Check it has all wind and zfb
-        for key in WIND_DICT:
-            if key not in tiles:
-                missing_tiles.append(key)
-            
-        for key in ZFB_DICT:
-            if key not in tiles:
-                missing_tiles.append(key)
+        required_tiles = self._get_thirteen_required_tiles()
+        missing_tiles = [tile for tile in required_tiles if tiles.get(tile, 0) == 0]
 
-        def thirteen_helper(suit, tiles):
-            suit_1 = f'{suit}1'
-            suit_9 = f'{suit}9'
-            if not suit_1 in tiles: missing_tiles.append(suit_1)
-            if not suit_9 in tiles: missing_tiles.append(suit_9)
+        if len(missing_tiles) > joker_number:
+            return []
 
-        thirteen_helper(TSM_NAME[0], tiles)
-        thirteen_helper(TSM_NAME[1], tiles)
-        thirteen_helper(TSM_NAME[2], tiles)
+        jokers_left = joker_number - len(missing_tiles)
+        missing_set = set(missing_tiles)
 
-        if len(missing_tiles) > joker_number: return []
+        pair_candidates = []
+        for tile in required_tiles:
+            count = tiles.get(tile, 0)
+            if tile in missing_set:
+                count += 1
+            needed_for_pair = max(0, 2 - count)
+            if needed_for_pair <= jokers_left:
+                pair_candidates.append((tile, needed_for_pair))
 
-        print(missing_tiles)
+        if not pair_candidates:
+            return []
 
-        return [] #{'hu_type':thirteen_waist_hu, 'eyes': eye, 'tiles': tiles_list}
-    
-    def standard_check(self, tiles):        
-        #Find all possible eyes
-        possible_eyes = []
+        base_tiles = []
+        for tile, count in tiles.items():
+            base_tiles.extend([tile] * count)
 
-        for key, value in tiles.items():
-            if value >= 2:
-                temp = tiles.copy()
-                temp[key] -= 2
-                temp = clean_tiles(temp)
-                possible_eyes.append((key, temp))
-        
         results = []
         seen_decks = set()
 
-        for eye, remaining_tiles in possible_eyes:
+        for pair_tile, jokers_for_pair in pair_candidates:
+            deck = base_tiles.copy()
+            deck.extend(missing_tiles)
+
+            if jokers_for_pair:
+                deck.extend([pair_tile] * jokers_for_pair)
+
+            remaining_jokers = jokers_left - jokers_for_pair
+            if remaining_jokers > 0:
+                deck.extend([pair_tile] * remaining_jokers)
+
+            deck_sorted = sorted(deck)
+            curr_deck = tuple(deck_sorted)
+            if curr_deck in seen_decks:
+                continue
+            seen_decks.add(curr_deck)
+
+            results.append({
+                'hu_type': thirteen_waist_hu,
+                'eyes': pair_tile,
+                'tiles': deck_sorted
+            })
+
+        return results
+    
+    def standard_check(self, tiles, joker_number):        
+        possible_eyes = self._generate_eye_candidates(tiles, joker_number)
+        if not possible_eyes:
+            return []
+
+        results = []
+        seen_decks = set()
+
+        for candidate in possible_eyes:
             all_solutions = []
-            self.top_down_dfs(remaining_tiles, [], all_solutions)
-            
+            self._search_standard_melds(candidate['tiles'], candidate['jokers_left'], 5, [], all_solutions)
+
             for solution in all_solutions:
-                complete_sets = [[eye, eye]] + solution
-                if len(complete_sets) == 6:
-                    sorted_sets = [tuple(sorted(s)) for s in complete_sets]
-                    sorted_sets = tuple(sorted(sorted_sets))
-                    
-                    if sorted_sets not in seen_decks:
-                        seen_decks.add(sorted_sets)
-                        complete_sets = sorted(complete_sets)
-                        results.append({'hu_type': standard_hu, 'eyes': eye, 'tiles': complete_sets})
+                complete_sets = [candidate['eye_tiles'].copy()] + [group.copy() for group in solution]
+                sorted_sets = [tuple(sorted(group)) for group in complete_sets]
+                normalized = tuple(sorted(sorted_sets))
+
+                if normalized in seen_decks:
+                    continue
+
+                seen_decks.add(normalized)
+                ordered_sets = sorted([group.copy() for group in complete_sets])
+                results.append({'hu_type': standard_hu, 'eyes': candidate['eye_tile'], 'tiles': ordered_sets})
 
         return results
 
-    def top_down_dfs(self, tiles, current_sets, all_solutions):
-        if not tiles:
-            # Found a complete solution, add a copy to all_solutions
-            all_solutions.append(current_sets.copy())
+    def _generate_eye_candidates(self, tiles, joker_number):
+        candidates = []
+
+        for tile, count in tiles.items():
+            if count >= 2:
+                next_tiles = tiles.copy()
+                next_tiles[tile] -= 2
+                candidates.append({
+                    'eye_tile': tile,
+                    'eye_tiles': [tile, tile],
+                    'tiles': clean_tiles(next_tiles),
+                    'jokers_left': joker_number
+                })
+
+            if joker_number >= 1 and count >= 1:
+                next_tiles = tiles.copy()
+                next_tiles[tile] -= 1
+                candidates.append({
+                    'eye_tile': tile,
+                    'eye_tiles': [tile, tile],
+                    'tiles': clean_tiles(next_tiles),
+                    'jokers_left': joker_number - 1
+                })
+
+        if joker_number >= 2:
+            for tile in ALL_TILES:
+                candidates.append({
+                    'eye_tile': tile,
+                    'eye_tiles': [tile, tile],
+                    'tiles': tiles.copy(),
+                    'jokers_left': joker_number - 2
+                })
+
+        return candidates
+
+    def _search_standard_melds(self, tiles, jokers_left, sets_needed, current_sets, all_solutions):
+        if sets_needed == 0:
+            if not tiles and jokers_left == 0:
+                all_solutions.append([group.copy() for group in current_sets])
             return
-        
-        #Get a tile from the tiles
-        temp = min(tiles.keys())
-        
-        #1. Try Gong
-        if self.test_pong(tiles, temp) and tiles[temp] > 3:
+
+        if not tiles:
+            self._fill_sets_with_only_jokers(jokers_left, sets_needed, current_sets, all_solutions)
+            return
+
+        curr_tile = min(tiles.keys())
+        count = tiles[curr_tile]
+
+        self._try_multiple_set(curr_tile, tiles, count, 4, jokers_left, sets_needed, current_sets, all_solutions)
+        self._try_multiple_set(curr_tile, tiles, count, 3, jokers_left, sets_needed, current_sets, all_solutions)
+        self._try_sequence_set(curr_tile, tiles, jokers_left, sets_needed, current_sets, all_solutions)
+
+    def _try_multiple_set(self, tile, tiles, tile_count, size, jokers_left, sets_needed, current_sets, all_solutions):
+        if tile_count <= 0:
+            return
+
+        max_joker_use = min(size - 1, jokers_left)
+        min_joker_needed = max(0, size - tile_count)
+
+        for jokers_used in range(min_joker_needed, max_joker_use + 1):
+            real_needed = size - jokers_used
+            if real_needed <= 0 or real_needed > tile_count:
+                continue
+
             next_tiles = tiles.copy()
-            next_tiles[temp] -= 4
+            next_tiles[tile] -= real_needed
             next_tiles = clean_tiles(next_tiles)
 
-            current_sets.append([temp, temp, temp, temp])
-            self.top_down_dfs(next_tiles, current_sets, all_solutions)
-            current_sets.pop()  # Backtrack
+            current_sets.append([tile] * size)
+            self._search_standard_melds(next_tiles, jokers_left - jokers_used, sets_needed - 1, current_sets, all_solutions)
+            current_sets.pop()
 
-        #2. Try Pong
-        if self.test_pong(tiles, temp):
-            next_tiles = tiles.copy()
-            next_tiles[temp] -= 3
-            next_tiles = clean_tiles(next_tiles)
+    def _try_sequence_set(self, tile, tiles, jokers_left, sets_needed, current_sets, all_solutions):
+        if tile not in MST_DICT:
+            return
 
-            current_sets.append([temp, temp, temp])
-            self.top_down_dfs(next_tiles, current_sets, all_solutions)
-            current_sets.pop()  # Backtrack
-        
-        #3. Try Shang
-        if self.test_shang(tiles, temp):
-            next_tiles = tiles.copy()
-            suit = temp[0]
-            rank = int(temp[1])
-            
-            next_tiles[temp] -= 1
-            next_tiles = clean_tiles(next_tiles)
-            
-            tile_plus_1 = f'{suit}{rank+1}'
-            next_tiles[tile_plus_1] -= 1
-            next_tiles = clean_tiles(next_tiles)
-            
-            tile_plus_2 = f'{suit}{rank+2}'
-            next_tiles[tile_plus_2] -= 1
-            next_tiles = clean_tiles(next_tiles)
-            
-            current_sets.append([temp, tile_plus_1, tile_plus_2])
-            self.top_down_dfs(next_tiles, current_sets, all_solutions)
-            current_sets.pop()  # Backtrack
-           
-    def test_pong(self, tiles, curr_tile):            
-        return tiles[curr_tile] >= 3
-    
-    def test_shang(self, tiles, curr_tile):
-        if curr_tile not in M_DICT and curr_tile not in S_DICT and curr_tile not in T_DICT:
-            return False
+        rank = MST_DICT[tile]
+        if rank > 7:
+            return
 
-        suit = curr_tile[0]
-        
-        number = int(curr_tile[1])
-        if number > 7:
-            return False
-        
-        tile_plus_1 = f'{suit}{number+1}'
-        tile_plus_2 = f'{suit}{number+2}'
-        
-        return (curr_tile in tiles and 
-                tile_plus_1 in tiles and 
-                tile_plus_2 in tiles and 
-                tiles[curr_tile] >= 1 and 
-                tiles[tile_plus_1] >= 1 and 
-                tiles[tile_plus_2] >= 1)
+        suit = tile[0]
+        seq_tiles = [tile, f'{suit}{rank + 1}', f'{suit}{rank + 2}']
+        jokers_used = 0
+        next_tiles = tiles.copy()
+
+        for seq_tile in seq_tiles:
+            if next_tiles.get(seq_tile, 0) > 0:
+                next_tiles[seq_tile] -= 1
+                if next_tiles[seq_tile] == 0:
+                    del next_tiles[seq_tile]
+            else:
+                jokers_used += 1
+
+        if jokers_used <= jokers_left:
+            current_sets.append(seq_tiles)
+            self._search_standard_melds(next_tiles, jokers_left - jokers_used, sets_needed - 1, current_sets, all_solutions)
+            current_sets.pop()
+
+    def _fill_sets_with_only_jokers(self, jokers_left, sets_needed, current_sets, all_solutions):
+        if sets_needed == 0:
+            if jokers_left == 0:
+                all_solutions.append([group.copy() for group in current_sets])
+            return
+
+        if jokers_left == 0:
+            return
+
+        if jokers_left == 3 and sets_needed == 1:
+            for combo in self._get_joker_only_triplets():
+                current_sets.append(combo.copy())
+                all_solutions.append([group.copy() for group in current_sets])
+                current_sets.pop()
+            return
+
+        if jokers_left == 4 and sets_needed == 1:
+            for quad in self._get_joker_only_quads():
+                current_sets.append(quad.copy())
+                all_solutions.append([group.copy() for group in current_sets])
+                current_sets.pop()
+            return
+
+    def _get_joker_only_triplets(self):
+        if not hasattr(self, '_joker_triplets_cache'):
+            combos = [[tile, tile, tile] for tile in ALL_TILES]
+            for suit in TSM_NAME:
+                for rank in range(1, 8):
+                    combos.append([f'{suit}{rank}', f'{suit}{rank + 1}', f'{suit}{rank + 2}'])
+            self._joker_triplets_cache = combos
+        return self._joker_triplets_cache
+
+    def _get_joker_only_quads(self):
+        if not hasattr(self, '_joker_quads_cache'):
+            self._joker_quads_cache = [[tile, tile, tile, tile] for tile in ALL_TILES]
+        return self._joker_quads_cache
+
+    def _get_thirteen_required_tiles(self):
+        if not hasattr(self, '_thirteen_required_cache'):
+            self._thirteen_required_cache = [
+                'east', 'south', 'west', 'north',
+                'zhong', 'fa', 'bai',
+                'm1', 'm9', 't1', 't9', 's1', 's9'
+            ]
+        return self._thirteen_required_cache
     
     def get_validated_decks(self):
         return self.possibleDecks
