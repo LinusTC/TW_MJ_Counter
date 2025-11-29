@@ -54,7 +54,7 @@ class DeckValidator:
         flowers = []
 
         for key in tiles:
-            if key in flower_dict:
+            if key in FLOWER_DICT:
                 flowers.append(key)
 
         if len(flowers) >= 7:
@@ -66,7 +66,7 @@ class DeckValidator:
         if (self.card_count(tiles) + joker_number) != 17:
             return []
 
-        tile_types = sorted(all_tiles)
+        tile_types = sorted(ALL_TILES)
         base_counts = tiles.copy()
         results = []
         seen_configs = set()
@@ -158,11 +158,11 @@ class DeckValidator:
 
         missing_tiles = []
         #Check it has all wind and zfb
-        for key in wind_dict:
+        for key in WIND_DICT:
             if key not in tiles:
                 missing_tiles.append(key)
             
-        for key in zfb_dict:
+        for key in ZFB_DICT:
             if key not in tiles:
                 missing_tiles.append(key)
 
@@ -232,9 +232,9 @@ class DeckValidator:
             #Already have 3 valid tiles
             return True, [sorted(list(present_tiles))], 0
 
-        m_possible, m_combos, m_daps_needed = sixteenbd_helper(m_dict, tsm_name[0])
-        t_possible, t_combos, t_daps_needed = sixteenbd_helper(t_dict, tsm_name[1])
-        s_possible, s_combos, s_daps_needed = sixteenbd_helper(s_dict, tsm_name[2])
+        m_possible, m_combos, m_daps_needed = sixteenbd_helper(M_DICT, TSM_NAME[0])
+        t_possible, t_combos, t_daps_needed = sixteenbd_helper(T_DICT, TSM_NAME[1])
+        s_possible, s_combos, s_daps_needed = sixteenbd_helper(S_DICT, TSM_NAME[2])
         if not m_possible or not t_possible or not s_possible:
             return []
         
@@ -292,13 +292,15 @@ class DeckValidator:
         return complete_decks            
             
     def thirteen_waist_check(self, tiles, joker_number):
+        if ((self.card_count(tiles) + joker_number) != 17): return []
+
         missing_tiles = []
         #Check it has all wind and zfb
-        for key in wind_dict:
+        for key in WIND_DICT:
             if key not in tiles:
                 missing_tiles.append(key)
             
-        for key in zfb_dict:
+        for key in ZFB_DICT:
             if key not in tiles:
                 missing_tiles.append(key)
 
@@ -308,9 +310,9 @@ class DeckValidator:
             if not suit_1 in tiles: missing_tiles.append(suit_1)
             if not suit_9 in tiles: missing_tiles.append(suit_9)
 
-        thirteen_helper(tsm_name[0], tiles)
-        thirteen_helper(tsm_name[1], tiles)
-        thirteen_helper(tsm_name[2], tiles)
+        thirteen_helper(TSM_NAME[0], tiles)
+        thirteen_helper(TSM_NAME[1], tiles)
+        thirteen_helper(TSM_NAME[2], tiles)
 
         if len(missing_tiles) > joker_number: return []
 
@@ -403,7 +405,7 @@ class DeckValidator:
         return tiles[curr_tile] >= 3
     
     def test_shang(self, tiles, curr_tile):
-        if curr_tile not in m_dict and curr_tile not in s_dict and curr_tile not in t_dict:
+        if curr_tile not in M_DICT and curr_tile not in S_DICT and curr_tile not in T_DICT:
             return False
 
         suit = curr_tile[0]

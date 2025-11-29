@@ -243,20 +243,20 @@ class FullCounter:
 
         if len(groups_with_winning_tile) == 1:
             possible_tiles = possible_tiles_list[0]
-            if len(possible_tiles['tiles']) == 1 and (possible_tiles['complete_type'] == shang or possible_tiles['complete_type'] == eyes):
+            if len(possible_tiles['tiles']) == 1 and (possible_tiles['complete_type'] == SHANG_DICT or possible_tiles['complete_type'] == EYES_DICT):
                 value = real_solo_value
                 log = f'獨獨 +{real_solo_value}'
                 return value, log
 
         if len(groups_with_winning_tile) > 1:
             for item in possible_tiles_list:
-                if (item['complete_type'] == shang or item['complete_type'] == eyes) and len(item['tiles']) == 1:
+                if (item['complete_type'] == SHANG_DICT or item['complete_type'] == EYES_DICT) and len(item['tiles']) == 1:
                     value = fake_solo_value
                     log = f'假獨 +{fake_solo_value}'
                     return value, log
 
         for item in possible_tiles_list:
-            if item['complete_type'] == pong:
+            if item['complete_type'] == PONG_DICT:
                 value = double_pong_value
                 log = f'對碰 +{double_pong_value}'
                 return value, log
@@ -298,7 +298,7 @@ class FullCounter:
         return value, log, has_fan, counted_pos
     
     def c_16bd(self):
-        if self.curr_validated_tiles['hu_type'] == sixteen_bd_hu:
+        if self.curr_validated_tiles['hu_type'] == sixteen_bd_hu and self.door_clear:
             value = sixteenbd_value
             log = f'16不搭 +{value}'
             return value, log
@@ -306,7 +306,7 @@ class FullCounter:
         return 0, None
     
     def c_13waist(self):
-        if self.curr_validated_tiles['hu_type'] == thirteen_waist_hu:
+        if self.curr_validated_tiles['hu_type'] == thirteen_waist_hu and self.door_clear:
             value = thirteen_waist_value
             log = f'13么/腰 +{value}'
             return value, log
@@ -314,7 +314,7 @@ class FullCounter:
         return 0, None
     
     def c_ligu(self):
-        if self.curr_validated_tiles['hu_type'] == ligu_hu:
+        if self.curr_validated_tiles['hu_type'] == ligu_hu and self.door_clear:
             value = li_gu_value
             log = f'Ligu +{value}'
             return value, log
@@ -322,7 +322,7 @@ class FullCounter:
         return 0, None
     
     def c_general_eyes(self):
-        if self.curr_validated_tiles['eyes'] is not None and self.curr_validated_tiles['eyes'] not in zfb_dict and self.curr_validated_tiles['eyes'] not in wind_dict: 
+        if self.curr_validated_tiles['eyes'] is not None and self.curr_validated_tiles['eyes'] not in ZFB_DICT and self.curr_validated_tiles['eyes'] not in WIND_DICT: 
             eyes_value = int(self.curr_validated_tiles['eyes'][1])
             if eyes_value == 2 or eyes_value == 5 or eyes_value == 8:
                 value = general_eye_value
@@ -349,10 +349,10 @@ class FullCounter:
                 gong_tiles.add(tile_group[0])
 
         for tile, count in self.winner_tiles.items():
-            if count == 4 and tile not in gong_tiles and self.door_clear and tile is not joker:
+            if count == 4 and tile not in gong_tiles and self.door_clear and tile is not JOKER_DICT:
                 total_value += dark_four_turtle_value
                 log.append(f'暗四歸{tile} +{dark_four_turtle_value}')
-            if count == 4 and tile not in gong_tiles and not self.door_clear and tile is not joker:
+            if count == 4 and tile not in gong_tiles and not self.door_clear and tile is not JOKER_DICT:
                 total_value += light_four_turtle_value
                 log.append(f'明四歸{tile} +{light_four_turtle_value}')
 
@@ -364,7 +364,7 @@ class FullCounter:
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
             for tile in tiles:
-                if tile in zfb_dict or tile in wind_dict:
+                if tile in ZFB_DICT or tile in WIND_DICT:
                     continue
                 number_set.add(tile[1])
         if len(number_set) == 3 and has_fan:
@@ -392,7 +392,7 @@ class FullCounter:
     def c_only_fan(self):
         for tile_group in self.curr_validated_tiles['tiles']:
             for tile in tile_group:
-                if tile not in zfb_dict or tile not in wind_dict:
+                if tile not in ZFB_DICT or tile not in WIND_DICT:
                     return 0, None
 
         value = only_fan_value
@@ -406,7 +406,7 @@ class FullCounter:
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
             for tile in tiles:
-                if tile in zfb_dict or tile in wind_dict:
+                if tile in ZFB_DICT or tile in WIND_DICT:
                     continue
                 number_set.add(tile[1])
         
@@ -424,7 +424,7 @@ class FullCounter:
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
             for tile in tiles:
-                if tile in zfb_dict or tile in wind_dict:
+                if tile in ZFB_DICT or tile in WIND_DICT:
                     continue
                 house_set.add(tile[0])
         
@@ -438,7 +438,7 @@ class FullCounter:
     def c_lao_shao(self):
         value = 0
         log = []
-        suits = {tsm_name[0]: [], tsm_name[1]: [], tsm_name[2]: []}
+        suits = {TSM_NAME[0]: [], TSM_NAME[1]: [], TSM_NAME[2]: []}
         
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
@@ -446,9 +446,9 @@ class FullCounter:
             suit = None
             
             for tile in tiles:
-                if tile not in zfb_dict and tile not in wind_dict:
+                if tile not in ZFB_DICT and tile not in WIND_DICT:
                     suit = tile[0]
-                    numbers.append(mst_dict[tile])
+                    numbers.append(MST_DICT[tile])
             
             if len(numbers) >= 3:
                 suits[suit].append(sorted(numbers))
@@ -500,12 +500,12 @@ class FullCounter:
         sisters = {}
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
-            if len(tiles) == 3 and tiles[0] not in zfb_dict and tiles[0] not in wind_dict:
+            if len(tiles) == 3 and tiles[0] not in ZFB_DICT and tiles[0] not in WIND_DICT:
                 numbers = set()
                 suit = tiles[0][0]
                 
                 for tile in tiles:
-                    tile_number = mst_dict[tile]
+                    tile_number = MST_DICT[tile]
                     numbers.add(tile_number)
 
                 if len(numbers) > 1:
@@ -530,12 +530,12 @@ class FullCounter:
         sisters = {}
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
-            if len(tiles) == 3 and tiles[0] not in zfb_dict and tiles[0] not in wind_dict:
+            if len(tiles) == 3 and tiles[0] not in ZFB_DICT and tiles[0] not in WIND_DICT:
                 numbers = set()
                 suit = tiles[0][0]
                 
                 for tile in tiles:
-                    tile_number = mst_dict[tile]
+                    tile_number = MST_DICT[tile]
                     numbers.add(tile_number)
 
                 if len(numbers) == 1:
@@ -591,12 +591,12 @@ class FullCounter:
 
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
-            if len(tiles) == 3 and tiles[0] not in zfb_dict and tiles[0] not in wind_dict:
+            if len(tiles) == 3 and tiles[0] not in ZFB_DICT and tiles[0] not in WIND_DICT:
                 numbers = set()
                 suit = tiles[0][0]
 
                 for tile in tiles:
-                    tile_number = mst_dict[tile]
+                    tile_number = MST_DICT[tile]
                     numbers.add(tile_number)
 
                 if numbers in valid_tiles:
@@ -670,12 +670,12 @@ class FullCounter:
         doors = set()
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
-            if tiles[0] in mst_dict:
+            if tiles[0] in MST_DICT:
                 suit = tiles[0][0]
                 doors.add(suit)
-            if tiles[0] in zfb_dict:
+            if tiles[0] in ZFB_DICT:
                 doors.add('zfb')
-            if tiles[0] in wind_dict:
+            if tiles[0] in WIND_DICT:
                 doors.add('wind')
 
         if len(doors) == 5:
@@ -693,7 +693,7 @@ class FullCounter:
         for item in self.curr_validated_tiles['tiles']:
             tiles = item if isinstance(item, list) else [item]
             for tile in tiles:
-                if mst_dict[tile] == 1 or mst_dict[tile] == 9 or tile in zfb_dict or tile in wind_dict:
+                if MST_DICT[tile] == 1 or MST_DICT[tile] == 9 or tile in ZFB_DICT or tile in WIND_DICT:
                     return 0, None
                 
         value = break_waist_value

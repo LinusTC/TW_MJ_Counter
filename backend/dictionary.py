@@ -1,16 +1,16 @@
-tsm_name = ['m', 't', 's']
-m_dict = {f'{tsm_name[0]}{i}': i for i in range(1, 10)}
-t_dict = {f'{tsm_name[1]}{i}': i for i in range(1, 10)}
-s_dict = {f'{tsm_name[2]}{i}': i for i in range(1, 10)}
-wind_dict = {'east', 'south', 'west', 'north'}
-zfb_dict = {'zhong', 'fa', 'bai'}
-flower_dict = {'f1' : 1, 'f2' : 2, 'f3' : 3, 'f4' : 4, 'ff1' : 1, 'ff2' : 2, 'ff3' : 3, 'ff4': 4}
-seat_dict = {1: 'east', 2: 'south', 3: 'west', 4: 'north'}
-joker = 'joker'
+TSM_NAME = ['m', 't', 's']
+M_DICT = {f'{TSM_NAME[0]}{i}': i for i in range(1, 10)}
+T_DICT = {f'{TSM_NAME[1]}{i}': i for i in range(1, 10)}
+S_DICT = {f'{TSM_NAME[2]}{i}': i for i in range(1, 10)}
+WIND_DICT = {'east', 'south', 'west', 'north'}
+ZFB_DICT = {'zhong', 'fa', 'bai'}
+FLOWER_DICT = {'f1' : 1, 'f2' : 2, 'f3' : 3, 'f4' : 4, 'ff1' : 1, 'ff2' : 2, 'ff3' : 3, 'ff4': 4}
+SEAT_DICT = {1: 'east', 2: 'south', 3: 'west', 4: 'north'}
+JOKER_DICT = 'joker'
 
-mst_dict = m_dict | t_dict | s_dict
+MST_DICT = M_DICT | T_DICT | S_DICT
 
-all_tiles = (list(m_dict.keys()) + list(t_dict.keys()) + list(s_dict.keys()) + list(wind_dict) + list(zfb_dict))
-eyes = 'eyes'
-shang = 'shang'
-pong = 'pong'
+ALL_TILES = (list(M_DICT.keys()) + list(T_DICT.keys()) + list(S_DICT.keys()) + list(WIND_DICT) + list(ZFB_DICT))
+EYES_DICT = 'eyes'
+SHANG_DICT = 'shang'
+PONG_DICT = 'pong'

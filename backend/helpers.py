@@ -5,7 +5,7 @@ def remove_flowers(tiles):
     no_flower_tiles = tiles.copy()
     keys_to_delete = []
     for key in no_flower_tiles:
-        if key in flower_dict:
+        if key in FLOWER_DICT:
             keys_to_delete.append(key)
     
     for key in keys_to_delete:
@@ -23,8 +23,8 @@ def check_is_special_hu(validated_deck):
 
 def remove_and_count_jokers(no_flower_tiles):
     no_joker_tiles = no_flower_tiles.copy()
-    if joker in no_joker_tiles:
-        return no_joker_tiles.pop(joker), no_joker_tiles
+    if JOKER_DICT in no_joker_tiles:
+        return no_joker_tiles.pop(JOKER_DICT), no_joker_tiles
     
     return 0, no_joker_tiles
 
@@ -34,18 +34,18 @@ def find_tiles_that_complete_set(incomplete_set):
     
     #Eyes 
     if len(incomplete_set) == 1:
-        return {'complete_type' : eyes,'tiles': [incomplete_set[0]]}
+        return {'complete_type' : EYES_DICT,'tiles': [incomplete_set[0]]}
 
     #Pong
     if incomplete_set[0] == incomplete_set[1]:
-        return {'complete_type' : pong, 'tiles': [incomplete_set[0]]}
+        return {'complete_type' : PONG_DICT, 'tiles': [incomplete_set[0]]}
 
     #Shang 
     if incomplete_set[0] != incomplete_set[1]:  
         suit = incomplete_set[0][0]
-        incomplete_set = sorted(incomplete_set, key=lambda x: mst_dict[x])
-        num1 = mst_dict[incomplete_set[0]]
-        num2 = mst_dict[incomplete_set[1]]
+        incomplete_set = sorted(incomplete_set, key=lambda x: MST_DICT[x])
+        num1 = MST_DICT[incomplete_set[0]]
+        num2 = MST_DICT[incomplete_set[1]]
     
         possible = []
         
@@ -54,6 +54,6 @@ def find_tiles_that_complete_set(incomplete_set):
                 possible.append(f'{suit}{num1 - 1}')
             if num2 + 1 < 10:
                 possible.append(f'{suit}{num2 + 1}')
-            return {'complete_type' : shang, 'tiles': possible}
+            return {'complete_type' : SHANG_DICT, 'tiles': possible}
         else:
-            return {'complete_type' : shang, 'tiles': [f'{suit}{num1 + 1}']}
+            return {'complete_type' : SHANG_DICT, 'tiles': [f'{suit}{num1 + 1}']}

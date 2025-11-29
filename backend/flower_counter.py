@@ -14,14 +14,14 @@ class FlowerCounter:
         counted_pos = False
 
         for key in self.winner_tiles:
-            if key not in flower_dict:
+            if key not in FLOWER_DICT:
                 continue
             else:
                 has_flower = True
                 value += flower_value
                 self.logs.append(f"花{key} +{flower_value}")
 
-                if flower_dict[key] == self.winner_seat:
+                if FLOWER_DICT[key] == self.winner_seat:
                     value += flower_seat_value
                     counted_pos = True
                     self.logs.append(f"花位{key} +{flower_seat_value}")

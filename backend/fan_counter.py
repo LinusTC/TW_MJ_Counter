@@ -28,7 +28,7 @@ class FanCounter:
         
         #Counts wind
         for key, count in tiles.items():
-            if key not in wind_dict:
+            if key not in WIND_DICT:
                 continue
             else:
                 has_wind = True
@@ -68,11 +68,11 @@ class FanCounter:
             wind_logs.append(f"正{self.curr_wind}圈 +{wind_wind_value}")
 
         #Counts seat position
-        seat_tile = seat_dict[self.winner_seat]
+        seat_tile = SEAT_DICT[self.winner_seat]
         if seat_tile in tiles and tiles[seat_tile] == 3:
             value += wind_seat_value
             counted_pos = True
-            wind_logs.append(f"正{seat_dict[self.winner_seat]}位 +{wind_seat_value}")
+            wind_logs.append(f"正{SEAT_DICT[self.winner_seat]}位 +{wind_seat_value}")
 
         self.logs.extend(wind_logs)
 
@@ -86,7 +86,7 @@ class FanCounter:
         zfb_logs = []
 
         for key, count in tiles.items():
-            if key not in zfb_dict:
+            if key not in ZFB_DICT:
                 continue
             else:
                 has_zfb = True
