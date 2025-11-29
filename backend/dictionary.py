@@ -14,3 +14,4 @@ ALL_TILES = (list(M_DICT.keys()) + list(T_DICT.keys()) + list(S_DICT.keys()) + l
 EYES_DICT = 'eyes'
 SHANG_DICT = 'shang'
 PONG_DICT = 'pong'
+GONG_DICT = 'gong'

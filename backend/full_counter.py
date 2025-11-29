@@ -236,26 +236,28 @@ class FullCounter:
                 remaining_tiles.remove(self.winning_tile)
                 groups_with_winning_tile[tuple(tiles)] = remaining_tiles
 
-        possible_tiles_list = [
-            find_tiles_that_complete_set(incomplete_group)
-            for incomplete_group in groups_with_winning_tile.values()
-        ]
+        possible_tiles_list = [find_tiles_that_complete_set(incomplete_group)for incomplete_group in groups_with_winning_tile.values()]
 
         if len(groups_with_winning_tile) == 1:
             possible_tiles = possible_tiles_list[0]
-            if len(possible_tiles['tiles']) == 1 and (possible_tiles['complete_type'] == SHANG_DICT or possible_tiles['complete_type'] == EYES_DICT):
-                value = real_solo_value
-                log = f'獨獨 +{real_solo_value}'
-                return value, log
+            if possible_tiles and 'tiles' in possible_tiles and 'complete_type' in possible_tiles:
+                if len(possible_tiles['tiles']) == 1 and (possible_tiles['complete_type'] == SHANG_DICT or possible_tiles['complete_type'] == EYES_DICT):
+                    value = real_solo_value
+                    log = f'獨獨 +{real_solo_value}'
+                    return value, log
 
         if len(groups_with_winning_tile) > 1:
             for item in possible_tiles_list:
+                if not item or 'tiles' not in item or 'complete_type' not in item:
+                    continue
                 if (item['complete_type'] == SHANG_DICT or item['complete_type'] == EYES_DICT) and len(item['tiles']) == 1:
                     value = fake_solo_value
                     log = f'假獨 +{fake_solo_value}'
                     return value, log
 
         for item in possible_tiles_list:
+            if not item or 'complete_type' not in item:
+                continue
             if item['complete_type'] == PONG_DICT:
                 value = double_pong_value
                 log = f'對碰 +{double_pong_value}'
