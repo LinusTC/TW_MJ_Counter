@@ -38,6 +38,13 @@ class FullCounter:
                 else:
                     temp_logs.append(curr_log)
 
+        #Check bomb
+        value, log, bomb_result = self.c_bomb_hu()
+        if bomb_result:
+            self.final_value = value
+            _add_to_log(log, self.logs)
+            return self.final_value, self.logs, None, None
+
         for i in range(self.total_number_of_valid_decks):
             temp_value = 0
             temp_logs = []
@@ -46,13 +53,6 @@ class FullCounter:
             '-------------------------------------------------------------------------'
             '--------------------------------ALL COUNTS-------------------------------'
             '-------------------------------------------------------------------------'
-
-            #Check bomb
-            value, log, bomb_result = self.c_bomb_hu()
-            if bomb_result:
-                self.final_value = value
-                _add_to_log(log, temp_logs)
-                return self.final_value, temp_logs
             
             #Check zi mo and door clear
             value, log = self.c_door_clear_zimo()
@@ -285,9 +285,7 @@ class FullCounter:
         return 0, None, False, False, False
     
     def c_fan(self):
-        curr_deck_counts = self._build_curr_deck_counts()
-        self.fanCounter.winner_tiles = curr_deck_counts
-        total_fan_value, has_wind, has_zfb, counted_pos = self.fanCounter.count_wind_and_zfb_value()
+        total_fan_value, has_wind, has_zfb, counted_pos = self.fanCounter.count_wind_and_zfb_value(self.curr_validated_tiles)
         has_fan = has_wind or has_zfb
 
         if not has_wind and not has_zfb:
@@ -401,19 +399,6 @@ class FullCounter:
         log = f'全番子 +{value}'        
         return value, log
 
-    def _build_curr_deck_counts(self):
-        tiles_structure = self.curr_validated_tiles.get('tiles') if isinstance(self.curr_validated_tiles, dict) else None
-        if not tiles_structure:
-            return self.winner_tiles.copy()
-
-        counts = {}
-
-        for tile_group in tiles_structure:
-            tiles = tile_group if isinstance(tile_group, list) else [tile_group]
-            for tile in tiles:
-                counts[tile] = counts.get(tile, 0) + 1
-
-        return counts
 
     def c_only_one_or_nine(self, has_fan):
         number_set = set()
