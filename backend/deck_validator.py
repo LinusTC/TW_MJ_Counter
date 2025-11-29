@@ -26,9 +26,9 @@ class DeckValidator:
             self.possibleDecks.extend(sixteen_bd_results)
 
         #Check 13 waist
-        thirteen_results = self.thirteen_waist_check(self.winner_tiles_no_flower)
+        thirteen_results = self.thirteen_waist_check(self.winner_tiles_no_joker_no_flower,self.joker_number)
         if thirteen_results:
-            self.possibleDecks.append(thirteen_results)
+            self.possibleDecks.extend(thirteen_results)
 
         #Check Ligu
         ligu_results = self.ligu_check(self.winner_tiles_no_joker_no_flower,self.joker_number)
@@ -291,7 +291,7 @@ class DeckValidator:
 
         return complete_decks            
             
-    def thirteen_waist_check(self, tiles):
+    def thirteen_waist_check(self, tiles, joker_number):
         tiles_to_remove = []
 
         #Check it has all wind and zfb
