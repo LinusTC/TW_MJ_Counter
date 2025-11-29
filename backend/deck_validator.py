@@ -1,10 +1,13 @@
 from dictionary import *
-from helpers import remove_flowers, clean_tiles
+from helpers import remove_flowers, clean_tiles, remove_and_count_jokers
 from types_of_hu import *
+from itertools import combinations, product
+
 class DeckValidator:
     def __init__(self, winner_tiles):
         self.winner_tiles = clean_tiles(winner_tiles)
         self.winner_tiles_no_flower = clean_tiles(remove_flowers(winner_tiles))
+        self.joker_number, self.winner_tiles_no_joker_no_flower = remove_and_count_jokers(self.winner_tiles_no_flower)
         self.possibleDecks = []
 
     def full_check(self):
@@ -18,9 +21,9 @@ class DeckValidator:
             return False
         
         #Check 16bd
-        sixteen_bd_results = self.sixteen_bd_check(self.winner_tiles_no_flower)
+        sixteen_bd_results = self.sixteen_bd_check(self.winner_tiles_no_joker_no_flower,self.joker_number)
         if sixteen_bd_results:
-            self.possibleDecks.append(sixteen_bd_results)
+            self.possibleDecks.extend(sixteen_bd_results)
 
         #Check 13 waist
         thirteen_results = self.thirteen_waist_check(self.winner_tiles_no_flower)
@@ -89,50 +92,149 @@ class DeckValidator:
 
         return results if pairs == 7 and triplets == 1 else {}
     
-    def sixteen_bd_check(self, tiles):
+    def sixteen_bd_check(self, tiles, joker_number):
+
+        #Check more than 1 pair
+        dap_for_eyes = 0
+        eyes = [key for key, value in tiles.items() if value == 2]
+        if len(eyes) > 1: return []
+        if len(eyes) < 1: dap_for_eyes += 1
+
+        missing_tiles = []
         #Check it has all wind and zfb
         for key in wind_dict:
             if key not in tiles:
-                return []
+                missing_tiles.append(key)
             
         for key in zfb_dict:
             if key not in tiles:
-                return []
+                missing_tiles.append(key)
 
         #Check at least separated by 3 for m,s,t.
-        def sixteenbd_helper(dictionary):
-            temp = 0
+        def sixteenbd_helper(dictionary, suit):
             present = [False] * 10
+            present_tiles = set()
+            present_numbers = []
+            
             for key in tiles:
                 if key in dictionary:
-                    present[dictionary[key]] = True
-                    temp += 1
+                    number = dictionary[key]
+                    present[number] = True
+                    present_tiles.add(key)
+                    present_numbers.append(number)
 
-            # Check that there are at least 3 tiles
-            if temp < 3:
-                return False
-
+            #Check that tiles are separated by at least 3
             for i in range(1, 10):
                 if present[i]:
                     if (i + 1 <= 9 and present[i + 1]) or (i + 2 <= 9 and present[i + 2]):
-                        return False
+                        return False, [], 0
+                    
+            #No tiles present
+            if len(present_tiles) == 0:
+                all_combos = combinations(range(1, 10), 3)
+                valid_combos = []
+                for combo in all_combos:
+                    if all(combo[i+1] - combo[i] >= 3 for i in range(len(combo) - 1)):
+                        temp = []
+                        for number in combo:
+                            suited_number = f'{suit}{number}'
+                            temp.append(suited_number)
+                        valid_combos.append(temp)
+                
+                return True, valid_combos, 3
+            
+            #Less than 3 tiles
+            if len(present_tiles) < 3:
+                present_numbers_sorted = sorted(present_numbers)
+                daps_needed = 3 - len(present_tiles)
+                valid_combos = []
+                
+                # Find all possible numbers that can be added
+                possible_nums = []
+                for num in range(1, 10):
+                    if num not in present_numbers:
+                        valid = True
+                        for temp_num in present_numbers:
+                            if abs(num - temp_num) < 3:
+                                valid = False
+                                break
+                        if valid:
+                            possible_nums.append(num)
+                
+                # Generate all combinations of the daps_needed numbers
+                for combo in combinations(possible_nums, daps_needed):
+                    combined = sorted(present_numbers_sorted + list(combo))
+                    if all(combined[i+1] - combined[i] >= 3 for i in range(len(combined) - 1)):
+                        temp = []
+                        for number in combined:
+                            suited_number = f'{suit}{number}'
+                            temp.append(suited_number)
+                        valid_combos.append(temp)
 
-            return True
+                return True, valid_combos, daps_needed
+            
+            #Already have 3 valid tiles
+            return True, [sorted(list(present_tiles))], 0
 
-        if not sixteenbd_helper(m_dict):return []
-        if not sixteenbd_helper(s_dict):return []
-        if not sixteenbd_helper(t_dict):return []
-
-        #Find pair of eyes
-        eyes = [key for key, value in tiles.items() if value == 2]
-        if len(eyes) != 1: return None
-
-        all_tiles = []
+        m_possible, m_combos, m_daps_needed = sixteenbd_helper(m_dict, tsm_name[0])
+        t_possible, t_combos, t_daps_needed = sixteenbd_helper(t_dict, tsm_name[1])
+        s_possible, s_combos, s_daps_needed = sixteenbd_helper(s_dict, tsm_name[2])
+        if not m_possible or not t_possible or not s_possible:
+            return []
+        
+        temp_daps_needed = m_daps_needed + t_daps_needed + s_daps_needed + len(missing_tiles) + dap_for_eyes
+        if temp_daps_needed > joker_number:
+            return []
+        
+        curr_present_tiles = []
         for key, value in tiles.items():
-            all_tiles.extend([key] * value)
+            curr_present_tiles.extend([key] * value)
 
-        return {'hu_type': sixteen_bd_hu,'eyes': eyes[0],'tiles': all_tiles}
-    
+        #Supplementing decks with daps
+        close_to_possible_decks = []
+        daps_used = 0
+        for m_combo, t_combo, s_combo in product(m_combos, t_combos, s_combos):
+            temp_deck = curr_present_tiles.copy()
+
+            for tile in missing_tiles:
+                temp_deck.append(tile)
+                daps_used += 1
+
+            for tile in m_combo:
+                if tile in curr_present_tiles:
+                    continue
+                temp_deck.append(tile)
+                daps_used += 1
+
+            for tile in s_combo:
+                if tile in curr_present_tiles:
+                    continue
+                temp_deck.append(tile)
+                daps_used += 1
+
+            for tile in t_combo:
+                if tile in curr_present_tiles:
+                    continue
+                temp_deck.append(tile)
+                daps_used += 1
+
+            close_to_possible_decks.append(sorted(temp_deck))
+
+        if len(eyes) == 1:
+            complete_decks = []
+            for item in close_to_possible_decks:
+                complete_decks.append({'hu_type': sixteen_bd_hu,'eyes': eyes[0],'tiles': item})
+            return complete_decks
+
+        complete_decks = []
+        for deck in close_to_possible_decks:
+             for tile in deck:
+                deck_with_eyes = deck.copy()
+                deck_with_eyes.append(tile)
+                complete_decks.append({'hu_type': sixteen_bd_hu,'eyes': tile,'tiles': deck_with_eyes})
+
+        return complete_decks            
+            
     def thirteen_waist_check(self, tiles):
         tiles_to_remove = []
 
