@@ -292,56 +292,31 @@ class DeckValidator:
         return complete_decks            
             
     def thirteen_waist_check(self, tiles, joker_number):
-        tiles_to_remove = []
-
+        missing_tiles = []
         #Check it has all wind and zfb
         for key in wind_dict:
-            tiles_to_remove.append(key)
             if key not in tiles:
-                return []
+                missing_tiles.append(key)
             
         for key in zfb_dict:
-            tiles_to_remove.append(key)
             if key not in tiles:
-                return []
-            
-        def thirteen_helper(prefix, tiles):
-            tiles_to_remove.append(f'{prefix}1')
-            tiles_to_remove.append(f'{prefix}9')
-            return f'{prefix}1' in tiles and f'{prefix}9' in tiles
-            
-        if not thirteen_helper(tsm_name[0], tiles): return []
-        if not thirteen_helper(tsm_name[1], tiles): return []
-        if not thirteen_helper(tsm_name[2], tiles): return []
-        
-        possible_eyes = []
+                missing_tiles.append(key)
 
-        for key, value in tiles.items():
-            if value >= 2:
-                temp = tiles.copy()
-                temp[key] -= 2
-                temp = clean_tiles(temp)
-                possible_eyes.append((key, temp))
+        def thirteen_helper(suit, tiles):
+            suit_1 = f'{suit}1'
+            suit_9 = f'{suit}9'
+            if not suit_1 in tiles: missing_tiles.append(suit_1)
+            if not suit_9 in tiles: missing_tiles.append(suit_9)
 
-        for eye, remaining_tiles in possible_eyes:
+        thirteen_helper(tsm_name[0], tiles)
+        thirteen_helper(tsm_name[1], tiles)
+        thirteen_helper(tsm_name[2], tiles)
 
-            for key in tiles_to_remove:
-                if key in remaining_tiles and key != eye:
-                    remaining_tiles[key] -= 1
-            remaining_tiles = clean_tiles(remaining_tiles)
+        if len(missing_tiles) > joker_number: return []
 
-            all_solutions = []
-            self.top_down_dfs(remaining_tiles, [], all_solutions)
+        print(missing_tiles)
 
-            if all_solutions:
-                # Use the first valid solution and flatten it
-                tiles_list = [[eye, eye]]
-                tiles_list.extend(all_solutions[0])
-                for tile in tiles_to_remove:
-                    tiles_list.append([tile])
-                return {'hu_type':thirteen_waist_hu, 'eyes': eye, 'tiles': tiles_list}
-
-        return []
+        return [] #{'hu_type':thirteen_waist_hu, 'eyes': eye, 'tiles': tiles_list}
     
     def standard_check(self, tiles):        
         #Find all possible eyes
