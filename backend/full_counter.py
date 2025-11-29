@@ -191,6 +191,8 @@ class FullCounter:
             temp_value *= self.multiplier
             # Compare with max after processing this deck
 
+            print(self.curr_validated_tiles, temp_value)
+
             if temp_value > max_value:
                 max_value = temp_value
                 max_logs = temp_logs
@@ -283,7 +285,7 @@ class FullCounter:
         return 0, None, False, False, False
     
     def c_fan(self):
-        total_fan_value, has_wind, has_zfb, counted_pos = self.fanCounter.count_wind_and_zfb_value()
+        total_fan_value, has_wind, has_zfb, counted_pos = self.fanCounter.count_wind_and_zfb_value(self.curr_validated_tiles)
         has_fan = has_wind or has_zfb
 
         if not has_wind and not has_zfb:
@@ -329,6 +331,12 @@ class FullCounter:
         return 0, None
     
     def c_gong_or_4_turtle(self):
+
+        #thirteen waist can technically have 4 turtle
+        is_special_hu = check_is_special_hu(self.curr_validated_tiles)
+        if is_special_hu and self.curr_validated_tiles['hu_type'] is not thirteen_waist_hu:
+            return 0, None
+        
         total_value = 0
         log = []
         gong_tiles = set()
@@ -390,6 +398,7 @@ class FullCounter:
         value = only_fan_value
         log = f'全番子 +{value}'        
         return value, log
+
 
     def c_only_one_or_nine(self, has_fan):
         number_set = set()

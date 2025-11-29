@@ -31,9 +31,9 @@ class DeckValidator:
             self.possibleDecks.append(thirteen_results)
 
         #Check Ligu
-        ligu_results = self.ligu_check(self.winner_tiles_no_flower)
+        ligu_results = self.ligu_check(self.winner_tiles_no_joker_no_flower,self.joker_number)
         if ligu_results:
-            self.possibleDecks.append(ligu_results)
+            self.possibleDecks.extend(ligu_results)
         
         #Check Standard, uses extend because there can be multiple iterations
         standard_results = self.standard_check(self.winner_tiles_no_flower)
@@ -62,37 +62,93 @@ class DeckValidator:
 
         return []
     
-    def ligu_check(self, tiles):
-        if (self.card_count(tiles) != 17): return []
+    def ligu_check(self, tiles, joker_number):
+        if (self.card_count(tiles) + joker_number) != 17:
+            return []
 
-        results = {'tiles':[]}
-        pairs = 0
-        triplets = 0
+        tile_types = sorted(all_tiles)
+        base_counts = tiles.copy()
+        results = []
+        seen_configs = set()
 
-        for key, value in tiles.items():
+        def pairs_needed_remaining(counts, jokers_left, needed_pairs):
+            return (self.card_count(counts) + jokers_left) >= needed_pairs * 2
 
-            #1 pair
-            if value == 2:
-                pairs += 1
-                results['tiles'].append([key, key])
-            
-            #2 pairs of the same card
-            elif value == 4:
-                pairs += 2
-                results['tiles'].append([key, key])
-                results['tiles'].append([key, key])
+        def pair_dfs(start_idx, counts, jokers_left, pairs_needed, current_pairs, collected):
+            if pairs_needed == 0:
+                collected.append([pair.copy() for pair in current_pairs])
+                return
 
-            #1 triplet in winning deck
-            elif value == 3:
-                triplets += 1
-                results['tiles'].append([key, key, key])
+            if start_idx >= len(tile_types):
+                return
 
-        results['hu_type'] = ligu_hu
-        results['eyes'] = None
+            if not pairs_needed_remaining(counts, jokers_left, pairs_needed):
+                return
 
-        return results if pairs == 7 and triplets == 1 else {}
+            for idx in range(start_idx, len(tile_types)):
+                tile = tile_types[idx]
+                available = counts.get(tile, 0)
+
+                if available >= 2:
+                    counts[tile] = available - 2
+                    if counts[tile] == 0:
+                        counts.pop(tile, None)
+                    current_pairs.append([tile, tile])
+                    pair_dfs(idx, counts, jokers_left, pairs_needed - 1, current_pairs, collected)
+                    current_pairs.pop()
+                    counts[tile] = available
+
+                if available >= 1 and jokers_left >= 1:
+                    counts[tile] = available - 1
+                    if counts[tile] == 0:
+                        counts.pop(tile, None)
+                    current_pairs.append([tile, tile])
+                    pair_dfs(idx, counts, jokers_left - 1, pairs_needed - 1, current_pairs, collected)
+                    current_pairs.pop()
+                    counts[tile] = available
+
+                if jokers_left >= 2:
+                    current_pairs.append([tile, tile])
+                    pair_dfs(idx, counts, jokers_left - 2, pairs_needed - 1, current_pairs, collected)
+                    current_pairs.pop()
+
+        for triplet_tile in tile_types:
+            available = base_counts.get(triplet_tile, 0)
+            max_joker_use = min(3, joker_number)
+
+            for joker_used_for_triplet in range(0, max_joker_use + 1):
+                real_needed = 3 - joker_used_for_triplet
+                if real_needed < 0:
+                    continue
+                if available < real_needed:
+                    continue
+
+                remaining_jokers = joker_number - joker_used_for_triplet
+                counts_after_triplet = base_counts.copy()
+                counts_after_triplet[triplet_tile] = available - real_needed
+                if counts_after_triplet[triplet_tile] == 0:
+                    counts_after_triplet.pop(triplet_tile, None)
+
+                pair_solutions = []
+                pair_dfs(0, counts_after_triplet, remaining_jokers, 7, [], pair_solutions)
+
+                for pairs in pair_solutions:
+                    full_tiles = [pair.copy() for pair in pairs]
+                    full_tiles.append([triplet_tile, triplet_tile, triplet_tile])
+                    normalized = tuple(sorted((tuple(group) for group in full_tiles), key=lambda grp: (len(grp), grp)))
+
+                    if normalized in seen_configs:
+                        continue
+
+                    seen_configs.add(normalized)
+                    ordered_tiles = [list(group) for group in normalized]
+                    results.append({'hu_type': ligu_hu, 'eyes': None, 'tiles': ordered_tiles})
+
+        return results
+
     
     def sixteen_bd_check(self, tiles, joker_number):
+        if ((self.card_count(tiles) + joker_number) != 17): return []
 
         #Check more than 1 pair
         dap_for_eyes = 0

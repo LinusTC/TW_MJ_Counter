@@ -10,6 +10,7 @@ joker = 'joker'
 
 mst_dict = m_dict | t_dict | s_dict
 
+all_tiles = (list(m_dict.keys()) + list(t_dict.keys()) + list(s_dict.keys()) + list(wind_dict) + list(zfb_dict))
 eyes = 'eyes'
 shang = 'shang'
 pong = 'pong'
