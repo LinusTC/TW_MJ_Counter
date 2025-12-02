@@ -1,24 +1,61 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Platform } from "react-native";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+const tab_icon_size = 26;
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Tabs
+      screenOptions={{
+        tabBarStyle: {
+          position: "absolute",
+          backgroundColor: "#166b60",
+          borderRadius: 25,
+          marginHorizontal: 20,
+          marginBottom: 30,
+          height: 70,
+          paddingBottom: 10,
+          paddingTop: 10,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 5,
+        },
+        tabBarActiveTintColor: "#ffffff",
+        tabBarInactiveTintColor: "rgba(255, 255, 255, 0.6)",
+        headerShown: false,
+        animation: "shift",
+      }}
+    >
+      <Tabs.Screen
+        name="play/index"
+        options={{
+          title: "Play",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="play-circle" size={tab_icon_size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="templates/index"
+        options={{
+          title: "Templates",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="albums" size={tab_icon_size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile/index"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-circle" size={tab_icon_size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
