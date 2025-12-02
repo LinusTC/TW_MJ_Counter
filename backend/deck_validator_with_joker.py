@@ -1,6 +1,5 @@
 from dictionary import *
 from helpers import remove_flowers, clean_tiles, remove_and_count_jokers
-from types_of_hu import *
 from itertools import combinations, product
 
 class DeckValidatorJoker:

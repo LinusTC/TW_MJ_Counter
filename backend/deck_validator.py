@@ -1,6 +1,5 @@
 from dictionary import *
 from helpers import remove_flowers, clean_tiles
-from types_of_hu import *
 class DeckValidator:
     def __init__(self, winner_tiles):
         self.winner_tiles = clean_tiles(winner_tiles)
