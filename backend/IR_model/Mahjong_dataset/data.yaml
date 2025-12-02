@@ -2,8 +2,8 @@ train: ../train/images
 val: ../valid/images
 test: ../test/images
 
-nc: 42
-names: ['s1', 'm1', 't1', 'f1', 'ff1', 's2', 'm2', 't2', 'f2', 'ff2', 's3', 'm3', 't3', 'f3', 'ff3', 's4', 'm4', 't4', 'f4', 'ff4', 's5', 'm5', 't5', 's6', 'm6', 't6', 's7', 'm7', 't7', 's8', 'm8', 't8', 's9', 'm9', 't9', 'east', 'fa', 'north', 'zhong', 'south', 'bai', 'west', 'joker']
+nc: 43
+names: ['s1', 'm1', 't1', 'f1', 'ff1', 's2', 'm2', 't2', 'f2', 'ff2', 's3', 'm3', 't3', 'f3', 'ff3', 's4', 'm4', 't4', 'f4', 'ff4', 's5', 'm5', 't5', 's6', 'm6', 't6', 's7', 'm7', 't7', 's8', 'm8', 't8', 's9', 'm9', 't9', 'east', 'fa', 'north', 'zhong', 'south', 'bai', 'west', joker]
 
 roboflow:
   workspace: jon-chan-gnsoa

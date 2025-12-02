@@ -6,8 +6,8 @@ class TileClassifier:
         self.classified_decks = []        
 
     def classify(self):
-        pretrained_model = YOLO("IR_model/runs/detect/x_model/weights/best.pt")
-        all_results = pretrained_model.predict(source=self.image_url, conf=0.5)
+        pretrained_model = YOLO("IR_model/runs/detect/m_model_v2/weights/last.pt")
+        all_results = pretrained_model.predict(source=self.image_url, conf=0.5, save=True)
 
         for result in all_results:
             boxes = result.boxes
