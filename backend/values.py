@@ -34,6 +34,9 @@ ban_gao_value = 2 #done
 two_ban_gao_value = 10 #done
 three_ban_gao_value = 20 #done
 
+same_bu_bu_gao_value = 10
+mixed_bu_bu_gao_value = 5
+
 light_mixed_dragon_value = 5 #done
 dark_mixed_dragon_value = 10 #done
 light_same_dragon_value = 10 #done

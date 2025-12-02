@@ -158,6 +158,11 @@ class FullCounter:
             value, log = self.c_ban_gao()
             temp_value += value            
             _add_to_log(log, temp_logs)
+
+            #Test bubu gao
+            value, log = self.c_bu_bu_gao()
+            temp_value += value            
+            _add_to_log(log, temp_logs)
             
             #Test sister
             value, log = self.c_sister()
@@ -493,6 +498,52 @@ class FullCounter:
                 total_value += three_ban_gao_value
                 log.append(f'三般高 +{three_ban_gao_value}')
                 
+        return total_value, log
+    
+    def c_bu_bu_gao(self):
+
+        total_value = 0
+        log = []
+        sequences = {}
+
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+
+            if len(tiles) == 3 and tiles[0] not in ZFB_DICT and tiles[0] not in WIND_DICT:
+                first_tile = MST_DICT[tiles[0]]
+                second_tile = MST_DICT[tiles[1]]
+                third_tile = MST_DICT[tiles[2]]
+
+                if first_tile + 1 == second_tile and first_tile + 2 == third_tile:
+                    suit = tiles[0][0]
+                    
+                    if first_tile not in sequences:
+                        sequences[first_tile] = []
+                    sequences[first_tile].append(suit)
+
+        for start_num in sequences:
+            if start_num + 1 in sequences and start_num + 2 in sequences:
+                suits_1 = sequences[start_num]
+                suits_2 = sequences[start_num + 1]
+                suits_3 = sequences[start_num + 2]
+                print(suits_1, suits_2, suits_3)
+                
+                for suit in suits_1:
+                    if suit in suits_2 and suit in suits_3:
+                        total_value += same_bu_bu_gao_value
+                        log.append(f'清步步高{suit} +{same_bu_bu_gao_value}')
+                        suits_1.remove(suit)
+                        suits_2.remove(suit)
+                        suits_3.remove(suit)
+                        break
+                
+                if suits_1 and suits_2 and suits_3:
+                    common_suits = set(suits_1) & set(suits_2) & set(suits_3)
+                    all_suits = set(suits_1) | set(suits_2) | set(suits_3)
+                    if not common_suits and len(all_suits) == 3:
+                        total_value += mixed_bu_bu_gao_value
+                        log.append(f'混步步高 +{mixed_bu_bu_gao_value}')
+
         return total_value, log
     
     def c_sister(self):
