@@ -35,6 +35,7 @@ if __name__ == "__main__":
     tile_classifier = TileClassifier(image_path)
     tile_classifier.classify()
     winner_tiles = tile_classifier.get_classified_decks()
+    print("detected deck: ", winner_tiles)
     
     print("\n" + "="*60)
     print("處理中... / Processing...")
