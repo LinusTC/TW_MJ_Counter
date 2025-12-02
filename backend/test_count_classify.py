@@ -4,7 +4,6 @@ from full_counter import FullCounter
 from tile_classifier import TileClassifier
 import tkinter as tk
 from tkinter import filedialog
-import os
 
 if __name__ == "__main__":
     # Create a hidden root window for the file dialog

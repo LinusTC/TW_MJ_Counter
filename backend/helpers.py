@@ -1,5 +1,4 @@
 from dictionary import *
-from types_of_hu import *
 
 def remove_flowers(tiles):
     no_flower_tiles = tiles.copy()

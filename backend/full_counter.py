@@ -3,7 +3,6 @@ from fan_counter import FanCounter
 from deck_validator import DeckValidator
 from helpers import *
 from values import *
-from types_of_hu import *
 from dictionary import *
 
 class FullCounter:
