@@ -1,6 +1,5 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
 
 const tab_icon_size = 26;
 
@@ -29,6 +28,7 @@ export default function RootLayout() {
         animation: "shift",
       }}
     >
+      <Tabs.Screen name="index" options={{ href: null }} />
       <Tabs.Screen
         name="play/index"
         options={{
