@@ -195,8 +195,6 @@ class FullCounter:
             temp_value *= self.multiplier
             # Compare with max after processing this deck
 
-            print(self.curr_validated_tiles, temp_value)
-
             if temp_value > max_value:
                 max_value = temp_value
                 max_logs = temp_logs
@@ -210,7 +208,7 @@ class FullCounter:
     
     def c_bomb_hu(self):
         if not self.valid:
-            return -explode_hu_value, f'炸胡， 每家賠-{explode_hu_value}', True
+            return -explode_hu_value*3, f'炸胡， 每家賠-{explode_hu_value}', True
         return 0, None, False
     
     def c_door_clear_zimo(self):
@@ -526,7 +524,6 @@ class FullCounter:
                 suits_1 = sequences[start_num]
                 suits_2 = sequences[start_num + 1]
                 suits_3 = sequences[start_num + 2]
-                print(suits_1, suits_2, suits_3)
                 
                 for suit in suits_1:
                     if suit in suits_2 and suit in suits_3:
