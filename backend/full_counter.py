@@ -175,6 +175,11 @@ class FullCounter:
             temp_value += value            
             _add_to_log(log, temp_logs)
 
+            #Test dark pong
+            value, log = self.c_dark_pong()
+            temp_value += value            
+            _add_to_log(log, temp_logs)
+
             #ping hu or dui dui hu
             value, log, type_of_hu = self.c_dui_dui_or_ping_hu()
             temp_value += value
@@ -348,7 +353,11 @@ class FullCounter:
         
         for tile_group in self.curr_validated_tiles['tiles']:
             tile_group = tile_group if isinstance(tile_group, list) else [tile_group]
-            if len(tile_group) == 4:
+            if len(tile_group) == 4 and self.door_clear:
+                total_value += dark_gong_value
+                log.append(f'暗槓{tile_group[0]} +{dark_gong_value}')
+                gong_tiles.add(tile_group[0])
+            elif len(tile_group) == 4:
                 total_value += gong_value
                 log.append(f'槓{tile_group[0]} +{gong_value}')
                 gong_tiles.add(tile_group[0])
@@ -567,10 +576,10 @@ class FullCounter:
         for item, value in sisters.items():
             if len(value) == 3:
                 total_value += three_sister_value
-                log.append(f'三姐妹 +{three_sister_value}')
+                log.append(f'三姐妹/三相逢 +{three_sister_value}')
             if len(value) == 2:
                 total_value += sister_value
-                log.append(f'姐妹 +{sister_value}')
+                log.append(f'姐妹/二相逢 +{sister_value}')
 
         return total_value, log
 
@@ -597,10 +606,48 @@ class FullCounter:
         for item, value in sisters.items():
             if len(value) == 3:
                 total_value += three_sister_pong_value
-                log.append(f'三相逢{item}號牌 +{three_sister_pong_value}')
+                log.append(f'三兄弟{item}號牌 +{three_sister_pong_value}')
             if len(value) == 2:
                 total_value += sister_pong_value
-                log.append(f'兩相逢{item}號牌 +{sister_pong_value}')
+                log.append(f'二兄弟{item}號牌 +{sister_pong_value}')
+
+        return total_value, log
+    
+    def c_dark_pong(self):
+        total_value = 0
+        log = []
+
+        if not self.door_clear:
+            return 0, None
+        
+        number_of_pongs = 0
+        
+        for item in self.curr_validated_tiles['tiles']:
+            tiles = item if isinstance(item, list) else [item]
+            temp = set()
+
+            if len(tiles) >= 3:
+                for tile in tiles:
+                    temp.add(tile)
+
+            if len(temp) == 1:
+                number_of_pongs += 1
+
+        if number_of_pongs == 5 and self.mo_myself:
+            total_value += five_dark_pong_zimo_value
+            log.append(f'坎坎胡 +{five_dark_pong_zimo_value}')        
+        elif number_of_pongs == 5 and not self.mo_myself:
+            total_value += five_dark_pong_value
+            log.append(f'五暗刻 +{five_dark_pong_value}')
+        elif number_of_pongs == 4:
+            total_value += four_dark_pong_value
+            log.append(f'四暗刻 +{four_dark_pong_value}')
+        elif number_of_pongs == 3:
+            total_value += three_dark_pong_value
+            log.append(f'三暗刻 +{three_dark_pong_value}')        
+        elif number_of_pongs == 2:
+            total_value += two_dark_pong_value
+            log.append(f'二暗刻 +{two_dark_pong_value}')                        
 
         return total_value, log
 
@@ -622,14 +669,14 @@ class FullCounter:
                 if len(tracker) == 1:
                     number_of_pongs += 1
 
-        if number_of_pongs == 5:
+        if number_of_pongs == 5 and (not self.mo_myself or not self.door_clear):
             value = dui_dui_hu_value
-            log = f'對對胡 +{value}'
+            log = f'對對胡 +{dui_dui_hu_value}'
             return value, log, 'dui_dui_hu'
         
         if number_of_pongs == 0:
             value = ping_hu_value
-            log = f'平胡 +{value}'
+            log = f'平胡 +{ping_hu_value}'
             return value, log, 'ping_hu'
         
         return 0, None, type_of_hu
@@ -672,22 +719,22 @@ class FullCounter:
 
             if same_house_dragon and self.door_clear:
                 value = dark_same_dragon_value
-                log = f'暗清龍 +{value}'
+                log = f'暗清龍 +{dark_same_dragon_value}'
                 return value, log
 
             if same_house_dragon and not self.door_clear:
                 value = light_same_dragon_value
-                log = f'明清龍 +{value}'
+                log = f'明清龍 +{light_same_dragon_value}'
                 return value, log
 
             if not same_house_dragon and self.door_clear:
                 value = dark_mixed_dragon_value
-                log = f'暗混龍 +{value}'
+                log = f'暗混龍 +{dark_mixed_dragon_value}'
                 return value, log
             
             if not same_house_dragon and not self.door_clear:
                 value = light_mixed_dragon_value
-                log = f'明混龍 +{value}'
+                log = f'明混龍 +{light_mixed_dragon_value}'
                 return value, log
 
         return 0, None

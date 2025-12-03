@@ -1,6 +1,9 @@
 flower_value = 1 #done
 wind_value = 1 #done
+
 gong_value = 1 #done
+dark_gong_value = 2 #done
+
 general_eye_value = 1 #done
 sister_value = 1 #done
 lao_shao_value = 1 #done
@@ -34,8 +37,14 @@ ban_gao_value = 2 #done
 two_ban_gao_value = 10 #done
 three_ban_gao_value = 20 #done
 
-same_bu_bu_gao_value = 10
-mixed_bu_bu_gao_value = 5
+two_dark_pong_value = 3 #done
+three_dark_pong_value = 10 #done
+four_dark_pong_value = 30 #done
+five_dark_pong_value = 80 #done
+five_dark_pong_zimo_value = 100 #done
+
+same_bu_bu_gao_value = 10 #done
+mixed_bu_bu_gao_value = 5 #done
 
 light_mixed_dragon_value = 5 #done
 dark_mixed_dragon_value = 10 #done
