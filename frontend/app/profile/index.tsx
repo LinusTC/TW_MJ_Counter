@@ -1,10 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
+import GradientBackground from "@/components/GradientBackground";
 
 export default function Profile() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Profile</Text>
-    </View>
+    <GradientBackground>
+      <View style={styles.container}>
+        <Text style={styles.text}>Profile</Text>
+      </View>
+    </GradientBackground>
   );
 }
 
@@ -13,7 +16,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
   text: {
     fontSize: 24,
