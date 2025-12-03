@@ -2,7 +2,7 @@ flower_value = 1 #done
 wind_value = 1 #done
 
 gong_value = 1 #done
-dark_gong_value = 2 #done
+dark_gong_value = 2
 
 general_eye_value = 1 #done
 sister_value = 1 #done
@@ -25,7 +25,7 @@ double_pong_value = 1 #done
 real_solo_value = 2 #done
 
 light_four_turtle_value = 3 #done
-dark_four_turtle_value = 5 #done
+dark_four_turtle_value = 5 
 ping_hu_value = 5 #done
 less_one_door_value = 5 #done
 break_waist_value = 5 #done
@@ -37,11 +37,11 @@ ban_gao_value = 2 #done
 two_ban_gao_value = 10 #done
 three_ban_gao_value = 20 #done
 
-two_dark_pong_value = 3 #done
-three_dark_pong_value = 10 #done
-four_dark_pong_value = 30 #done
-five_dark_pong_value = 80 #done
-five_dark_pong_zimo_value = 100 #done
+two_dark_pong_value = 3 
+three_dark_pong_value = 10 
+four_dark_pong_value = 30 
+five_dark_pong_value = 80 
+five_dark_pong_zimo_value = 100 
 
 same_bu_bu_gao_value = 10 #done
 mixed_bu_bu_gao_value = 5 #done

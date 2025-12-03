@@ -181,7 +181,7 @@ class FullCounter:
             _add_to_log(log, temp_logs)
 
             #ping hu or dui dui hu
-            value, log, type_of_hu = self.c_dui_dui_or_ping_hu()
+            value, log, type_of_hu = self.c_dui_dui_or_ping_hu_or_kang_kang_hu()
             temp_value += value
             _add_to_log(log, temp_logs)
 
@@ -353,20 +353,13 @@ class FullCounter:
         
         for tile_group in self.curr_validated_tiles['tiles']:
             tile_group = tile_group if isinstance(tile_group, list) else [tile_group]
-            if len(tile_group) == 4 and self.door_clear:
-                total_value += dark_gong_value
-                log.append(f'暗槓{tile_group[0]} +{dark_gong_value}')
-                gong_tiles.add(tile_group[0])
-            elif len(tile_group) == 4:
+            if len(tile_group) == 4:
                 total_value += gong_value
                 log.append(f'槓{tile_group[0]} +{gong_value}')
                 gong_tiles.add(tile_group[0])
 
         for tile, count in self.winner_tiles.items():
-            if count == 4 and tile not in gong_tiles and self.door_clear and tile is not JOKER_DICT:
-                total_value += dark_four_turtle_value
-                log.append(f'暗四歸{tile} +{dark_four_turtle_value}')
-            if count == 4 and tile not in gong_tiles and not self.door_clear and tile is not JOKER_DICT:
+            if count == 4 and tile not in gong_tiles and tile is not JOKER_DICT:
                 total_value += light_four_turtle_value
                 log.append(f'明四歸{tile} +{light_four_turtle_value}')
 
@@ -612,13 +605,11 @@ class FullCounter:
                 log.append(f'二兄弟{item}號牌 +{sister_pong_value}')
 
         return total_value, log
-    
+
+    """
     def c_dark_pong(self):
         total_value = 0
         log = []
-
-        if not self.door_clear:
-            return 0, None
         
         number_of_pongs = 0
         
@@ -632,11 +623,8 @@ class FullCounter:
 
             if len(temp) == 1:
                 number_of_pongs += 1
-
-        if number_of_pongs == 5 and self.mo_myself:
-            total_value += five_dark_pong_zimo_value
-            log.append(f'坎坎胡 +{five_dark_pong_zimo_value}')        
-        elif number_of_pongs == 5 and not self.mo_myself:
+     
+        if number_of_pongs == 5:
             total_value += five_dark_pong_value
             log.append(f'五暗刻 +{five_dark_pong_value}')
         elif number_of_pongs == 4:
@@ -650,8 +638,9 @@ class FullCounter:
             log.append(f'二暗刻 +{two_dark_pong_value}')                        
 
         return total_value, log
+    """
 
-    def c_dui_dui_or_ping_hu(self):
+    def c_dui_dui_or_ping_or_kang_kang_hu(self):
         type_of_hu = None
         is_special_hu = check_is_special_hu(self.curr_validated_tiles)
         # Skip duidui/pinghu counting for special hu types
@@ -669,11 +658,16 @@ class FullCounter:
                 if len(tracker) == 1:
                     number_of_pongs += 1
 
+        if number_of_pongs == 5 and self.mo_myself and self.door_clear:
+            value += five_dark_pong_zimo_value
+            log= f'坎坎胡 +{five_dark_pong_zimo_value}' 
+            return value, log, 'kang_kang_hu'
+        
         if number_of_pongs == 5 and (not self.mo_myself or not self.door_clear):
             value = dui_dui_hu_value
             log = f'對對胡 +{dui_dui_hu_value}'
             return value, log, 'dui_dui_hu'
-        
+                
         if number_of_pongs == 0:
             value = ping_hu_value
             log = f'平胡 +{ping_hu_value}'
@@ -717,22 +711,12 @@ class FullCounter:
                     same_house_dragon = True
                     break
 
-            if same_house_dragon and self.door_clear:
-                value = dark_same_dragon_value
-                log = f'暗清龍 +{dark_same_dragon_value}'
-                return value, log
-
-            if same_house_dragon and not self.door_clear:
+            if same_house_dragon:
                 value = light_same_dragon_value
                 log = f'明清龍 +{light_same_dragon_value}'
                 return value, log
-
-            if not same_house_dragon and self.door_clear:
-                value = dark_mixed_dragon_value
-                log = f'暗混龍 +{dark_mixed_dragon_value}'
-                return value, log
             
-            if not same_house_dragon and not self.door_clear:
+            if not same_house_dragon:
                 value = light_mixed_dragon_value
                 log = f'明混龍 +{light_mixed_dragon_value}'
                 return value, log
