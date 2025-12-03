@@ -41,7 +41,7 @@ two_dark_pong_value = 3
 three_dark_pong_value = 10 
 four_dark_pong_value = 30 
 five_dark_pong_value = 80 
-five_dark_pong_zimo_value = 100 
+five_dark_pong_zimo_value = 100 #done
 
 same_bu_bu_gao_value = 10 #done
 mixed_bu_bu_gao_value = 5 #done
