@@ -1,5 +1,6 @@
 from dictionary import *
 from deck_validator import DeckValidator
+from deck_validator_with_joker import DeckValidatorJoker
 from full_counter import FullCounter
 
 if __name__ == "__main__":
@@ -7,15 +8,15 @@ if __name__ == "__main__":
     sixteenbd_test = {'m1': 1, 'm5': 1, 'm9': 1, 's1': 1, 's4': 1, 's7': 1, 't1': 1, 't6': 1, 't9': 1, 'east': 1, 'south': 1, 'west': 2, 'north': 1, 'zhong': 1, 'fa': 1, 'bai':1}
     Thirteen_waist_test = {'m1': 1, 'm9':1, 's1': 1, 's9':1, 't1': 1, 't7':1, 't8':1, 't9':3, 'east': 1, 'south': 1, 'west': 1, 'north': 1, 'zhong': 1, 'fa': 1, 'bai':1}
     ligu_test = {'m1': 4, 'm5': 4, 't1': 4, 'zhong': 2, 'bai': 3}
-    standard_test = {'m2':2, 'm3':2, 'm4': 2, 's5': 1, 's3':1, 's4': 1,'t3':1, 't4': 2, 't5': 2, 't6':1, 't8':2}
-    joker_test = {'f1': 1, "ff1": 1, 'f2': 1, 'ff2': 1, "f3": 1, 'ff3': 1, 'f4':1, 'ff4':1, 'joker':4, 'm1': 2, 'm9': 4, 'north': 4, 'east': 4, 'west': 4}
+    standard_test = {'m2':1, 'm3':1, 'm4': 1, 'west':3, 's5': 1, 's3':1, 's4': 1,'t3':1, 't4': 2, 't5': 2, 't6':1, 't8':2}
+    max_fan = {'f1': 1, "ff1": 1, 'f2': 1, 'ff2': 1, "f3": 1, 'ff3': 1, "f4": 1, 'ff4': 1, 'south':4, 'm1': 2, 'm9': 4, 'north': 4, 'east': 4, 'west': 4}
 
-    winner_seat = 2
+    winner_seat = 3
     curr_wind = 'west'
 
     # All test cases
     tests = {
-        'joker_test': standard_test
+        'test': max_fan
     }
     
     # Run all tests
@@ -27,7 +28,11 @@ if __name__ == "__main__":
         deck_validator = DeckValidator(test_tiles)
         has_valid_deck = deck_validator.full_check()
         print(f'Has valid decks: {has_valid_deck}')
-        
+
+        decks = deck_validator.get_validated_decks()
+        for deck in decks:
+            print(deck)      
+              
         full_counter = FullCounter(test_tiles, winner_seat, curr_wind, 'm1', True, True, 0, 1)
         count, logs, winning_deck, winning_deck_organized = full_counter.full_count()
         print(f'Count: {count}')

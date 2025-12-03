@@ -63,13 +63,13 @@ class FanCounter:
             wind_logs.append(f"大四喜 +{value}")
 
         #Counts curr wind
-        if self.curr_wind in tiles and tiles[self.curr_wind] == 3:
+        if self.curr_wind in tiles and tiles[self.curr_wind] >= 3:
             value += wind_value
             wind_logs.append(f"正{self.curr_wind}圈 +{wind_wind_value}")
 
         #Counts seat position
         seat_tile = SEAT_DICT[self.winner_seat]
-        if seat_tile in tiles and tiles[seat_tile] == 3:
+        if seat_tile in tiles and tiles[seat_tile] >= 3:
             value += wind_seat_value
             counted_pos = True
             wind_logs.append(f"正{SEAT_DICT[self.winner_seat]}位 +{wind_seat_value}")

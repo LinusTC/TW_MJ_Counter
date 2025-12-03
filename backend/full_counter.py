@@ -1,6 +1,7 @@
 from flower_counter import FlowerCounter
 from fan_counter import FanCounter
 from deck_validator import DeckValidator
+from deck_validator_with_joker import DeckValidatorJoker
 from helpers import *
 from values import *
 from dictionary import *

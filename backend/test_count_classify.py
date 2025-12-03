@@ -32,7 +32,7 @@ if __name__ == "__main__":
     
     # Use the selected image
     tile_classifier = TileClassifier(image_path)
-    tile_classifier.classify()
+    tile_classifier.classify_photo()
     winner_tiles = tile_classifier.get_classified_decks()
     print("detected deck: ", winner_tiles)
     

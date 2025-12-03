@@ -20,7 +20,7 @@ async def classify_hand(image: UploadFile = File(...)):
     pil_image = Image.open(BytesIO(payload))
     
     tile_classifier = TileClassifier(pil_image)
-    tile_classifier.classify()
+    tile_classifier.classify_photo()
     classified_decks = tile_classifier.get_classified_decks()
     
     return {
