@@ -22,24 +22,24 @@ async def classify_hand(image: UploadFile = File(...)):
     tile_classifier = TileClassifier(pil_image)
     tile_classifier.classify()
     classified_decks = tile_classifier.get_classified_decks()
-
-    results = []
-    for deck in classified_decks:
-        deck_validator = DeckValidator(deck)
-        deck_validator.full_check()
-
-        full_counter = FullCounter(deck, 1, 1, None, True, True, 0, 1)
-        count, logs, winning_deck, winning_deck_organized = full_counter.full_count()
-        
-        results.append({
-            "count": count,
-            "logs": logs,
-            "winning_deck_organized": winning_deck_organized,
-        })
     
     return {
         "filename": image.filename,
         "size": len(payload),
         "classified_decks": classified_decks,
-        "results": results
+    }
+
+@twmj.post("/get-points")
+async def get_points(winner_tiles: dict):
+    
+    deck_validator = DeckValidator(winner_tiles)
+    deck_validator.full_check()
+
+    full_counter = FullCounter(winner_tiles, 1, 1, None, True, True, 0, 1)
+    count, logs, winning_deck, winning_deck_organized = full_counter.full_count()
+    
+    return {
+        "count": count,
+        "logs": logs,
+        "winning_deck_organized": winning_deck_organized,
     }
