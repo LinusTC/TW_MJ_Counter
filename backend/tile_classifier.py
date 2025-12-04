@@ -7,7 +7,7 @@ class TileClassifier:
 
     def classify_photo(self):
         pretrained_model = YOLO("IR_model/runs/detect/m_model_v2/weights/last.pt")
-        all_results = pretrained_model.predict(source=self.image_source, conf=0.5)
+        all_results = pretrained_model.predict(source=self.image_source, conf=0.5, save=True)
 
         for result in all_results:
             boxes = result.boxes

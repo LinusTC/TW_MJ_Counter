@@ -176,12 +176,12 @@ class FullCounter:
             _add_to_log(log, temp_logs)
 
             #Test dark pong
-            value, log = self.c_dark_pong()
-            temp_value += value            
-            _add_to_log(log, temp_logs)
+            #value, log = self.c_dark_pong()
+            #temp_value += value            
+            #_add_to_log(log, temp_logs)
 
             #ping hu or dui dui hu
-            value, log, type_of_hu = self.c_dui_dui_or_ping_hu_or_kang_kang_hu()
+            value, log, type_of_hu = self.c_dui_dui_or_ping_or_kang_kang_hu()
             temp_value += value
             _add_to_log(log, temp_logs)
 
@@ -659,7 +659,7 @@ class FullCounter:
                     number_of_pongs += 1
 
         if number_of_pongs == 5 and self.mo_myself and self.door_clear:
-            value += five_dark_pong_zimo_value
+            value = five_dark_pong_zimo_value
             log= f'坎坎胡 +{five_dark_pong_zimo_value}' 
             return value, log, 'kang_kang_hu'
         
