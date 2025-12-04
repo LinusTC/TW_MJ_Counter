@@ -7,12 +7,12 @@ from values import *
 from dictionary import *
 
 class FullCounter:
-    def __init__(self, winner_tiles, winner_seat, current_wind, winning_tile, mo_myself, door_clear, base_value, multiplier):
+    def __init__(self, winner_tiles, winner_seat, current_wind, winning_tile, myself_mo, door_clear, base_value, multiplier):
         self.winner_tiles = winner_tiles
         self.winner_seat = winner_seat
         self.current_wind = current_wind
         self.winning_tile = winning_tile
-        self.mo_myself = mo_myself
+        self.myself_mo = myself_mo
         self.door_clear = door_clear
         self.base_value = base_value
         self.multiplier = multiplier
@@ -219,9 +219,9 @@ class FullCounter:
     
     def c_door_clear_zimo(self):
         is_special_hu = check_is_special_hu(self.curr_validated_tiles)
-        if self.mo_myself and self.door_clear and not is_special_hu: 
+        if self.myself_mo and self.door_clear and not is_special_hu: 
             return door_clear_zimo_value, f'門清自摸 +{door_clear_zimo_value}'
-        if self.mo_myself: 
+        if self.myself_mo: 
             return myself_mo_value, f'自摸 +{myself_mo_value}'
         if self.door_clear and not is_special_hu: 
             return door_clear_value, f'門清 +{door_clear_value}'
@@ -658,12 +658,12 @@ class FullCounter:
                 if len(tracker) == 1:
                     number_of_pongs += 1
 
-        if number_of_pongs == 5 and self.mo_myself and self.door_clear:
+        if number_of_pongs == 5 and self.myself_mo and self.door_clear:
             value = five_dark_pong_zimo_value
             log= f'坎坎胡 +{five_dark_pong_zimo_value}' 
             return value, log, 'kang_kang_hu'
         
-        if number_of_pongs == 5 and (not self.mo_myself or not self.door_clear):
+        if number_of_pongs == 5 and (not self.myself_mo or not self.door_clear):
             value = dui_dui_hu_value
             log = f'對對胡 +{dui_dui_hu_value}'
             return value, log, 'dui_dui_hu'

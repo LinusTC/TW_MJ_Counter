@@ -6,13 +6,13 @@ export function c_bomb_hu(valid: boolean): BombHuResult {
     return {
       value: -explode_hu_value * 3,
       log: `炸胡， 每家賠-${explode_hu_value}`,
-      isBombHu: true,
+      is_bomb_hu: true,
     };
   }
 
   return {
     value: 0,
     log: null,
-    isBombHu: false,
+    is_bomb_hu: false,
   };
 }

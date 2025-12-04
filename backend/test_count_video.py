@@ -74,7 +74,7 @@ if __name__ == "__main__":
         while True:
             mo_input = input("\n自摸? (y/n) / Self-draw? (y/n): ").lower()
             if mo_input in ['y', 'n', 'yes', 'no']:
-                mo_myself = mo_input in ['y', 'yes']
+                myself_mo = mo_input in ['y', 'yes']
                 break
             print("請輸入 y 或 n / Please enter y or n")
         
@@ -106,7 +106,7 @@ if __name__ == "__main__":
         winning_tile = input("\n胡牌 (可選，按Enter跳過) / Winning tile (optional, press Enter to skip): ").strip() or None
         
         validated_decks = deck_validator.get_validated_decks()
-        full_counter = FullCounter(set_of_tiles, winner_seat, current_wind, winning_tile, mo_myself, door_clear, base_score, multiplier)
+        full_counter = FullCounter(set_of_tiles, winner_seat, current_wind, winning_tile, myself_mo, door_clear, base_score, multiplier)
         count, logs, winning_deck, winning_deck_organized = full_counter.full_count()
         
         print("\n" + "="*60)

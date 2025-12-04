@@ -8,7 +8,7 @@ export interface CounterResult {
 }
 
 export interface BombHuResult extends CounterResult {
-  isBombHu: boolean;
+  is_bomb_hu: boolean;
 }
 
 export interface FlowerResult extends CounterResult {
@@ -27,10 +27,17 @@ export interface DuiDuiResult extends CounterResult {
 }
 
 export interface ValidatedDeck {
-  hu_type: string;
+  hu_type?: string;
   eyes?: string | null;
   tiles?: Array<string | string[]>;
   flowers?: string[];
+}
+
+export interface base_results {
+  value: number;
+  log: string | string[] | null;
+  winning_deck: TileCount | null;
+  winning_deck_organized: ValidatedDeck | null;
 }
 
 export interface CounterState {
@@ -38,7 +45,7 @@ export interface CounterState {
   winner_seat: string;
   current_wind: string;
   winning_tile: string | null;
-  mo_myself: boolean;
+  myself_mo: boolean;
   door_clear: boolean;
   base_value: number;
   multiplier: number;

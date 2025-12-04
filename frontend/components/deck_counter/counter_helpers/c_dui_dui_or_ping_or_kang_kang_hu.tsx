@@ -8,7 +8,7 @@ import {
 
 export function c_dui_dui_or_ping_or_kang_kang_hu(
   curr_validated_tiles: ValidatedDeck,
-  mo_myself: boolean,
+  myself_mo: boolean,
   door_clear: boolean
 ): DuiDuiResult {
   let type_of_hu: "kang_kang_hu" | "dui_dui_hu" | "ping_hu" | null = null;
@@ -40,7 +40,7 @@ export function c_dui_dui_or_ping_or_kang_kang_hu(
     }
   }
 
-  if (number_of_pongs === 5 && mo_myself && door_clear) {
+  if (number_of_pongs === 5 && myself_mo && door_clear) {
     return {
       value: five_dark_pong_zimo_value,
       log: `坎坎胡 +${five_dark_pong_zimo_value}`,
@@ -48,7 +48,7 @@ export function c_dui_dui_or_ping_or_kang_kang_hu(
     };
   }
 
-  if (number_of_pongs === 5 && (!mo_myself || !door_clear)) {
+  if (number_of_pongs === 5 && (!myself_mo || !door_clear)) {
     return {
       value: dui_dui_hu_value,
       log: `對對胡 +${dui_dui_hu_value}`,
