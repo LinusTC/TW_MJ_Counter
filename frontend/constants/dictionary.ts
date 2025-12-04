@@ -8,9 +8,9 @@ export const T_DICT: Record<string, number> = {};
 export const S_DICT: Record<string, number> = {};
 
 for (let i = 1; i <= 9; i++) {
-  M_DICT["${TSM_NAME[0]}${i}"] = i;
-  T_DICT["${TSM_NAME[1]}${i}"] = i;
-  S_DICT["${TSM_NAME[2]}${i}"] = i;
+    M_DICT[`${TSM_NAME[0]}${i}`] = i;
+    T_DICT[`${TSM_NAME[1]}${i}`] = i;
+    S_DICT[`${TSM_NAME[2]}${i}`] = i;
 }
 
 export const WIND_DICT = new Set(["east", "south", "west", "north"]);
@@ -18,21 +18,21 @@ export const WIND_DICT = new Set(["east", "south", "west", "north"]);
 export const ZFB_DICT = new Set(["zhong", "fa", "bai"]);
 
 export const FLOWER_DICT: Record<string, number> = {
-  f1: 1,
-  f2: 2,
-  f3: 3,
-  f4: 4,
-  ff1: 1,
-  ff2: 2,
-  ff3: 3,
-  ff4: 4,
+    f1: 1,
+    f2: 2,
+    f3: 3,
+    f4: 4,
+    ff1: 1,
+    ff2: 2,
+    ff3: 3,
+    ff4: 4,
 };
 
 export const SEAT_DICT: Record<number, string> = {
-  1: "east",
-  2: "south",
-  3: "west",
-  4: "north",
+    1: "east",
+    2: "south",
+    3: "west",
+    4: "north",
 };
 
 export const JOKER_DICT = "joker";
@@ -42,11 +42,11 @@ export const MST_DICT = { ...M_DICT, ...T_DICT, ...S_DICT };
 
 // All tiles list
 export const ALL_TILES = [
-  ...Object.keys(M_DICT),
-  ...Object.keys(T_DICT),
-  ...Object.keys(S_DICT),
-  ...Array.from(WIND_DICT),
-  ...Array.from(ZFB_DICT),
+    ...Object.keys(M_DICT),
+    ...Object.keys(T_DICT),
+    ...Object.keys(S_DICT),
+    ...Array.from(WIND_DICT),
+    ...Array.from(ZFB_DICT),
 ];
 
 // Set types

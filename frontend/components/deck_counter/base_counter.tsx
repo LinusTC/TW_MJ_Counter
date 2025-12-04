@@ -141,6 +141,7 @@ export class BaseCounter {
                     winning_deck = this.winner_tiles;
                     winning_deck_organized = this.curr_validated_tiles;
                 }
+                continue;
             }
 
             //Check fan
@@ -156,7 +157,7 @@ export class BaseCounter {
             const counted_fan_pos = fan_result.countedPos;
 
             //No fan and no flower
-            if (!(has_flower && has_fan)) {
+            if (!(has_flower || has_fan)) {
                 temp_value += noFlower_noZFB_nowind_value_add_on;
                 add_to_log(
                     `無字無花再加 ${noFlower_noZFB_nowind_value_add_on}`,

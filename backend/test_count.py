@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     # All test cases
     tests = {
-        'test': max_fan
+        'test': standard_test
     }
     
     # Run all tests
