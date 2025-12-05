@@ -1,0 +1,63 @@
+description: Ultralytics YOLO11m model trained on /kaggle/input/mj-dataset/IR_model/Mahjong_dataset/data.yaml
+author: Ultralytics
+date: '2025-12-05T09:17:11.826535'
+version: 8.3.235
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
+stride: 32
+task: detect
+batch: 1
+imgsz:
+- 640
+- 640
+names:
+  0: s1
+  1: m1
+  2: t1
+  3: f1
+  4: ff1
+  5: s2
+  6: m2
+  7: t2
+  8: f2
+  9: ff2
+  10: s3
+  11: m3
+  12: t3
+  13: f3
+  14: ff3
+  15: s4
+  16: m4
+  17: t4
+  18: f4
+  19: ff4
+  20: s5
+  21: m5
+  22: t5
+  23: s6
+  24: m6
+  25: t6
+  26: s7
+  27: m7
+  28: t7
+  29: s8
+  30: m8
+  31: t8
+  32: s9
+  33: m9
+  34: t9
+  35: east
+  36: fa
+  37: north
+  38: zhong
+  39: south
+  40: bai
+  41: west
+  42: joker
+args:
+  batch: 1
+  fraction: 1.0
+  half: false
+  int8: false
+  nms: false
+channels: 3
