@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, WebSocket
 from tile_classifier import TileClassifier
 from deck_validator import DeckValidator
 from full_counter import FullCounter
@@ -43,3 +43,15 @@ async def get_points(winner_tiles: dict):
         "logs": logs,
         "winning_deck_organized": winning_deck_organized,
     }
+
+@twmj.websocket("/start-scan/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    await websocket.accept()
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"Message text was: {data}, from client: {client_id}")
+    except Exception:
+        print(f"Client {client_id} disconnected.")
+    finally:
+        await websocket.close()
