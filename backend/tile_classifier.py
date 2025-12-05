@@ -6,7 +6,7 @@ class TileClassifier:
         self.classified_decks = []        
 
     def classify_photo(self):
-        pretrained_model = YOLO("IR_model/runs/detect/m_model_v2/weights/best.pt")
+        pretrained_model = YOLO("IR_model/runs/detect/m_model_v2/weights/last.pt")
         all_results = pretrained_model.predict(source=self.image_source, conf=0.5, save=True)
 
         for result in all_results:
@@ -23,7 +23,7 @@ class TileClassifier:
             self.classified_decks.append(detected_tiles)
 
     def classify_video(self):
-        pretrained_model = YOLO("IR_model/runs/detect/m_model_v2/weights/best.pt")
+        pretrained_model = YOLO("IR_model/runs/detect/m_model_v2/weights/last.pt")
         all_results = pretrained_model.predict(source=self.image_source, conf=0.5, stream=True, save = True)
 
         previous_detection = None

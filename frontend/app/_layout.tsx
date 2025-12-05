@@ -43,6 +43,19 @@ export default function RootLayout() {
                 }}
             />
             <Tabs.Screen
+                name="camera/index"
+                options={{
+                    title: "Camera",
+                    tabBarIcon: ({ color }) => (
+                        <Ionicons
+                            name="camera"
+                            size={tab_icon_size}
+                            color={color}
+                        />
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="templates/index"
                 options={{
                     title: "Templates",
