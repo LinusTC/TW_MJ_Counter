@@ -4,10 +4,14 @@ from deck_validator import DeckValidator
 from full_counter import FullCounter
 from PIL import Image
 from io import BytesIO
+import base64
 from pillow_heif import register_heif_opener
+from ultralytics import YOLO
 
 register_heif_opener()
 twmj = FastAPI()
+
+YOLO_MODEL = YOLO("IR_model/runs/detect/m_model_v2/weights/last.pt")
 
 @twmj.get("/")
 def root():
@@ -19,7 +23,7 @@ async def classify_hand(image: UploadFile = File(...)):
     payload = await image.read()
     pil_image = Image.open(BytesIO(payload))
     
-    tile_classifier = TileClassifier(pil_image)
+    tile_classifier = TileClassifier(pil_image, [], YOLO_MODEL)
     tile_classifier.classify_photo()
     classified_decks = tile_classifier.get_classified_decks()
     
@@ -47,11 +51,40 @@ async def get_points(winner_tiles: dict):
 @twmj.websocket("/start-scan/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await websocket.accept()
+    classified_array = []
     try:
         while True:
-            data = await websocket.receive_text()
-            await websocket.send_text(f"Message text was: {data}, from client: {client_id}")
-    except Exception:
-        print(f"Client {client_id} disconnected.")
+            # Try to receive as text (base64) first, fallback to binary
+            try:
+                data = await websocket.receive_text()
+                # Decode base64 to bytes
+                image_bytes = base64.b64decode(data)
+            except:
+                # If text fails, receive as binary
+                image_bytes = await websocket.receive_bytes()
+            
+            try:
+                pil_image = Image.open(BytesIO(image_bytes))
+                
+                # Classify the image
+                tile_classifier = TileClassifier(pil_image, classified_array, YOLO_MODEL)
+                tile_classifier.classify_photo()
+                stable_classified_deck = tile_classifier.stablize_image()
+
+                # Send classification result back
+                await websocket.send_json({
+                    "status": "success",
+                    "classified_decks": stable_classified_deck,
+                })
+                
+            except Exception as e:
+                await websocket.send_json({
+                    "status": "error",
+                    "message": str(e)
+                })
+                
+    except Exception as e:
+        print(f"Client {client_id} disconnected: {e}")
     finally:
         await websocket.close()
+        print(f"Client {client_id} connection closed.")

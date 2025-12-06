@@ -12,7 +12,7 @@ import {
     thirteen_waist_hu,
     standard_hu,
 } from "../../constants/dictionary";
-import { removeFlowers, cleanTiles } from "../../utils/helpers";
+import { removeFlowers, cleanTiles } from "../../utils/mj_helpers";
 import { TileCount, ValidatedDeck } from "../../types/counter";
 
 export class DeckValidator {
